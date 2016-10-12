@@ -30,7 +30,8 @@ class Spriter {
         "lastupdate": time,
         "currX": 0,
         "currY": 0,
-        "multiline" : spritelist[i].multiline
+        "multiline" : spritelist[i].multiline,
+        "animate" : false
       });
       image.onload = function() {
         console.log("loaded!");
@@ -46,7 +47,7 @@ class Spriter {
       var retSprite = this.checkUpdate(spriteID);
       return retSprite;
     } else {
-      console.log("Unable to draw sprite: " + name);
+      console.log("Unable to find sprite: " + name);
       return null;
     }
 
@@ -56,7 +57,7 @@ class Spriter {
   checkUpdate(num) {
     var sprite = this.sprites[num];
     var now = new Date().getTime();
-    if (now >= sprite.lastupdate + sprite.timing) {
+    if (now >= sprite.lastupdate + sprite.timing && sprite.animate) {
       this.sprites[num].lastupdate = now;
       this.sprites[num].currX += sprite.width;
       if (this.sprites[num].currX >= this.sprites[num].maxwidth) {
@@ -74,6 +75,41 @@ class Spriter {
       }
     }
     return ({"image": this.sprites[num].image, "x": this.sprites[num].currX, "y": this.sprites[num].currY, "width": this.sprites[num].width, "height": this.sprites[num].height});
+  }
+
+  //duplicates sprites to use more of the same image
+  duplicateSprite(curr, newName) {
+    var spriteID = this.sprites.map(function(e) { return e.name; }).indexOf(curr);
+    if (spriteID > -1) {
+      var sprite = this.sprites[spriteID];
+      var time = new Date().getTime();
+      var dupeSprite = {
+        "name" : newName,
+        "image" : sprite.image,
+        "width" : sprite.width,
+        "height" : sprite.height,
+        "maxwidth" : sprite.maxwidth,
+        "maxheight" : sprite.maxheight,
+        "timing" : sprite.timing,
+        "lastupdate": time,
+        "currX": 0,
+        "currY": 0,
+        "multiline" : sprite.multiline,
+        "animate" : false
+      }
+      this.sprites.push(dupeSprite);
+    } else {
+      console.log("Unable to find sprite: " + curr + "   " + spriteID);
+    }
+  }
+
+  animate(sprite, option) {
+    var spriteID = this.sprites.map(function(e) { return e.name; }).indexOf(sprite);
+    if (spriteID > -1) {
+      this.sprites[spriteID].animate = option;
+    } else {
+      console.log("Unable to find sprite: " + sprite)
+    }
   }
 
   //check if all sprites loaded
