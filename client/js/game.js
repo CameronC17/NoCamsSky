@@ -4,6 +4,8 @@ var animFrame = window.requestAnimationFrame || window.webkitRequestAnimationFra
 var c = document.getElementById("canvas");
 var ctx = c.getContext("2d");
 
+window.addEventListener('mousedown', saveMouse, false);
+
 var loaded = false;
 var gameTick = 50;
 
@@ -85,6 +87,27 @@ var recursiveAnim = function() {
     };
 animFrame(recursiveAnim);
 
+// mouse stuff
+
+function saveMouse(e) {
+  var pos = getMousePos(e);
+  if (pos.x >= 0 && pos.x <= c.width && pos.y >= 0 && pos.y <= c.height) {
+    if (screen != null) {
+      screen.checkMouseClick(pos);
+    }
+  }
+}
+
+function getMousePos(evt) {
+  var rect = c.getBoundingClientRect();
+  //Return mouse location related to canvas with JSON format
+  return {
+    x: evt.clientX - rect.left,
+    y: evt.clientY - rect.top
+  };
+};
+
+
 //game engine #####################################
 function game() {
 
@@ -101,14 +124,15 @@ class Screen {
   constructor() {
     //1=home 2=character creation 3=game,space 4=game,planet
     this.screenPosition = 1;
-    this.stars = [];
-    this.createStars(numStars);
+    this.stars = this.createStars(numStars);
+    this.homeButtons = this.createHomepageButtons();
+    this.createButtons = [];
   }
 
   draw() {
     switch (this.screenPosition) {
       case 1:
-        this.drawMenu();
+        this.drawHome();
         break;
       case 2:
         break;
@@ -117,23 +141,42 @@ class Screen {
     }
   }
 
-  drawMenu() {
-    this.drawMenuBackground();
+  drawHome() {
+    this.drawHomeBackground();
     this.drawStars();
     this.drawTitle();
+    this.drawHomeButtons();
   }
 
-  drawMenuBackground() {
+  drawHomeBackground() {
     ctx.fillStyle="#000";
     ctx.fillRect(0, 0, c.width, c.height);
   }
 
+  drawHomeButtons() {
+    for (var i = 0; i < this.homeButtons.length; i++) {
+      this.drawButton(this.homeButtons[i]);
+    }
+  }
+
+  drawButton(btn) {
+    var button = btn;
+    ctx.fillStyle=button.colour;
+    ctx.fillRect(button.x, button.y, button.width, button.height);
+    ctx.font="60px Arial";
+    ctx.fillStyle="#fff";
+    ctx.fillText(button.text, button.x + (button.width/2) - (ctx.measureText(button.text).width / 2), button.y + (button.height/2) + (parseInt(ctx.font) / 3));
+  }
+
   createStars(num) {
+    var tempArray = [];
     for (var i = 0; i < num; i++) {
       var star = new Star(null, [c.width, c.height]);
       star.speed = Math.floor(Math.random() * 3) + 1;
-      this.stars.push(star);
+      tempArray.push(star);
     }
+
+    return tempArray;
   }
 
   drawStars() {
@@ -160,6 +203,31 @@ class Screen {
     ctx.fillText("NO CAM'S SKY", (c.width/2) - 360, 200);
   }
 
+  createHomepageButtons() {
+    var btns = [];
+    btns.push(new Button("#ff6e00", c.width/2 - 250, 320, 500, 100, "LOGIN"));
+    btns.push(new Button("#ff6e00", c.width/2 - 250, 500, 500, 100, "CREATE"));
+    return btns;
+  }
+
+  checkMouseClick(click) {
+    switch (this.screenPosition) {
+      case 1:
+        this.checkButtons(click, this.homeButtons);
+        break;
+      default:
+        break;
+    }
+  }
+
+  checkButtons(click, array) {
+    for (var i = 0; i < array.length; i++) {
+      var button = array[i];
+      if (click.x >= button.x && click.x <= button.x + button.width && click.y >= button.y && click.y <= button.y + button.height)
+        console.log(button.text);
+    }
+  }
+
 
 
 }
@@ -178,8 +246,13 @@ class Star {
 
 
 class Button {
-  constructor() {
-
+  constructor(colour, x, y, width, height, text) {
+    this.colour = colour;
+    this.x = x;
+    this.y = y;
+    this.width = width;
+    this.height = height;
+    this.text = text;
   }
 
 
