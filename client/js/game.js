@@ -62,7 +62,7 @@ function checkLoad() {
   ctx.fillStyle="#ff0000";
   if (spriter.checkLoaded()) {
     loaded = true;
-    screen = new Screen();
+    screen = new Screen(connection);
   }
   //var loadText = "LOADING";
   ctx.font="70px Arial";
@@ -121,7 +121,7 @@ game();
 // GAME CLASSES!!!!!!!!!!!!!!!
 
 class Screen {
-  constructor() {
+  constructor(connection) {
     //1=home 2=character creation 3=game,space 4=game,planet
     this.screenPosition = 1;
     this.stars = this.createStars(numStars);
@@ -129,6 +129,9 @@ class Screen {
     this.homeButtons = this.createHomepageButtons();
     this.loginButtons = this.createLoginButtons();
     this.createButtons = this.createCreateButtons();
+    this.txtBoxUsername = document.getElementById("username");
+    this.txtBoxPassword = document.getElementById("password");
+    this.connection = connection;
   }
 
   draw() {
@@ -252,10 +255,8 @@ class Screen {
 
   checkMouseClick(click) {
     if (click.x >= this.resetButton.x && click.x <= this.resetButton.x + this.resetButton.width && click.y >= this.resetButton.y && click.y <= this.resetButton.y + this.resetButton.height) {
-      var txtBoxUsername = document.getElementById("username");
-      var txtBoxPassword = document.getElementById("password");
-      txtBoxUsername.style.display = "none";
-      txtBoxPassword.style.display = "none";
+      this.txtBoxUsername.style.display = "none";
+      this.txtBoxPassword.style.display = "none";
       this.screenPosition = 1;
     } else {
     switch (this.screenPosition) {
@@ -271,7 +272,7 @@ class Screen {
       default:
         break;
     }
-  }
+    }
   }
 
   checkButtons(click, array) {
@@ -299,7 +300,18 @@ class Screen {
             break;
           case 3:
             //REGISTER HERE
-            console.log(button.text);
+            if (this.txtBoxUsername.value != "" && this.txtBoxPassword.value != "") {
+              var data = {
+                "username" : this.txtBoxUsername.value,
+                "password" : this.txtBoxPassword.value
+              }
+              this.connection.emit('newUser', data);
+              this.txtBoxUsername.style.value = "";
+              this.txtBoxPassword.style.value = "";
+              this.txtBoxUsername.style.display = "none";
+              this.txtBoxPassword.style.display = "none";
+              this.screenPosition = 1;
+            }
           default:
             break;
         }
@@ -345,17 +357,24 @@ class Screen {
   }
 
   drawTextInput() {
-    var txtBoxUsername = document.getElementById("username");
-    var txtBoxPassword = document.getElementById("password");
-    txtBoxUsername.style.display = "inline-block";
-    txtBoxPassword.style.display = "inline-block";
+    this.txtBoxUsername.style.display = "inline-block";
+    this.txtBoxPassword.style.display = "inline-block";
   }
 
 }
 
 class Connection {
   constructor() {
-    
+    this.socket = io.connect("http://localhost:8000");
+    this.socket.on('connect', this.connectMessage);
+  }
+
+  connectMessage() {
+    console.log("We have connect-off");
+  }
+
+  emit(target, data) {
+    this.socket.emit(target, data);
   }
 }
 
@@ -379,3 +398,7 @@ class Button {
     this.text = text;
   }
 }
+
+
+//create a new socket.io connection
+var connection = new Connection();

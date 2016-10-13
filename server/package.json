@@ -1,0 +1,25 @@
+{
+  "name": "nocamssky",
+  "version": "1.0.0",
+  "description": "A space exploration game",
+  "main": "server.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "start": "node server.js"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/CameronC17/NoCamsSky.git"
+  },
+  "author": "Cameron Chalmers",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/CameronC17/NoCamsSky/issues"
+  },
+  "homepage": "https://github.com/CameronC17/NoCamsSky#readme",
+  "dependencies": {
+    "express": "^4.14.0",
+    "mongoose": "^4.6.3",
+    "socket.io": "^1.5.0"
+  }
+}
