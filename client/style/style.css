@@ -1,0 +1,21 @@
+input {
+  width: 600px;
+  height: 80px;
+  font-size: 40px;
+}
+
+#username {
+  position: absolute;
+  z-index: 1;
+  top: 300px;
+  left: 300px;
+  display: none;
+}
+
+#password {
+  position: absolute;
+  z-index: 1;
+  top: 400px;
+  left: 300px;
+  display: none;
+}

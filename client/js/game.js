@@ -125,7 +125,9 @@ class Screen {
     //1=home 2=character creation 3=game,space 4=game,planet
     this.screenPosition = 1;
     this.stars = this.createStars(numStars);
+    this.resetButton = this.createResetButton();
     this.homeButtons = this.createHomepageButtons();
+    this.loginButtons = this.createLoginButtons();
     this.createButtons = [];
   }
 
@@ -135,6 +137,7 @@ class Screen {
         this.drawHome();
         break;
       case 2:
+        this.drawLogin();
         break;
       default:
         break;
@@ -142,13 +145,13 @@ class Screen {
   }
 
   drawHome() {
-    this.drawHomeBackground();
+    this.drawBackground();
     this.drawStars();
     this.drawTitle();
     this.drawHomeButtons();
   }
 
-  drawHomeBackground() {
+  drawBackground() {
     ctx.fillStyle="#000";
     ctx.fillRect(0, 0, c.width, c.height);
   }
@@ -157,6 +160,10 @@ class Screen {
     for (var i = 0; i < this.homeButtons.length; i++) {
       this.drawButton(this.homeButtons[i]);
     }
+  }
+
+  drawResetButton() {
+    this.drawButton(this.resetButton);
   }
 
   drawButton(btn) {
@@ -200,7 +207,21 @@ class Screen {
   drawTitle() {
     ctx.fillStyle="#43e2f1";
     ctx.font="100px Arial";
-    ctx.fillText("NO CAM'S SKY", (c.width/2) - 360, 200);
+    switch (this.screenPosition) {
+      case 1:
+        ctx.fillText("NO CAM'S SKY", (c.width/2) - 360, 200);
+        break;
+      case 2:
+        ctx.fillText("LOGIN", (c.width/2) - 160, 200);
+        break;
+      case 3:
+        ctx.fillText("CREATE AN ACCOUNT", (c.width/2) - 400, 200);
+        break;
+      default:
+        ctx.fillText("HOW DID YOU GET HERE", (c.width/2) - 460, 200);
+        break;
+    }
+
   }
 
   createHomepageButtons() {
@@ -210,25 +231,100 @@ class Screen {
     return btns;
   }
 
+  createLoginButtons() {
+    var btns = [];
+    btns.push(new Button("#ff6e00", c.width/2 - 250, 520, 500, 100, "LOGIN"));
+    return btns;
+  }
+
+  createResetButton() {
+    var btn = new Button("#ff26fb", 20, 20, 200, 80, "HOME");
+    return btn;
+  }
+
   checkMouseClick(click) {
+    if (click.x >= this.resetButton.x && click.x <= this.resetButton.x + this.resetButton.width && click.y >= this.resetButton.y && click.y <= this.resetButton.y + this.resetButton.height) {
+      var txtBoxUsername = document.getElementById("username");
+      var txtBoxPassword = document.getElementById("password");
+      txtBoxUsername.style.display = "none";
+      txtBoxPassword.style.display = "none";
+      this.screenPosition = 1;
+    } else {
     switch (this.screenPosition) {
       case 1:
-        this.checkButtons(click, this.homeButtons);
+        this.checkButtons(click, this.screenPosition, this.homeButtons);
+        break;
+      case 2:
+        this.checkButtons(click, this.screenPosition, this.loginButtons);
         break;
       default:
         break;
     }
   }
-
-  checkButtons(click, array) {
-    for (var i = 0; i < array.length; i++) {
-      var button = array[i];
-      if (click.x >= button.x && click.x <= button.x + button.width && click.y >= button.y && click.y <= button.y + button.height)
-        console.log(button.text);
-    }
   }
 
+  checkButtons(click, screen, array) {
+    for (var i = 0; i < array.length; i++) {
+      var button = array[i];
+      if (click.x >= button.x && click.x <= button.x + button.width && click.y >= button.y && click.y <= button.y + button.height) {
+        switch (screen) {
+          case 1:
+            switch (button.text) {
+              case "LOGIN":
+                this.screenPosition = 2;
+                break;
+              case "CREATE":
+                this.screenPosition = 3;
+                break;
+              default:
+                this.screenPosition= 1;
+                break;
+            }
+            break;
+          case 2:
+            console.log(button.text);
+            break;
+          default:
+            break;
+        }
 
+      }
+    }
+
+  }
+
+  drawLogin() {
+    this.drawBackground();
+    this.drawStars();
+    this.drawTitle();
+    this.drawTextInput();
+    this.drawLoginButtons();
+    this.drawResetButton();
+  }
+
+  drawCreate() {
+    this.drawBackground();
+    this.drawStars();
+    this.drawTitle();
+    this.drawTextInput();
+    this.drawCreateButtons();
+    this.drawResetButton();
+  }
+
+  drawLoginButtons() {
+    this.drawButton(this.loginButtons[0]);
+  }
+
+  drawCreateButtons() {
+    this.drawButton(this.createButtons[0]);
+  }
+
+  drawTextInput() {
+    var txtBoxUsername = document.getElementById("username");
+    var txtBoxPassword = document.getElementById("password");
+    txtBoxUsername.style.display = "inline-block";
+    txtBoxPassword.style.display = "inline-block";
+  }
 
 }
 
@@ -244,7 +340,6 @@ class Star {
   }
 }
 
-
 class Button {
   constructor(colour, x, y, width, height, text) {
     this.colour = colour;
@@ -254,6 +349,4 @@ class Button {
     this.height = height;
     this.text = text;
   }
-
-
 }
