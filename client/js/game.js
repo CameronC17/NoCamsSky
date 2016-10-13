@@ -128,7 +128,7 @@ class Screen {
     this.resetButton = this.createResetButton();
     this.homeButtons = this.createHomepageButtons();
     this.loginButtons = this.createLoginButtons();
-    this.createButtons = [];
+    this.createButtons = this.createCreateButtons();
   }
 
   draw() {
@@ -139,6 +139,8 @@ class Screen {
       case 2:
         this.drawLogin();
         break;
+      case 3:
+        this.drawCreate();
       default:
         break;
     }
@@ -215,10 +217,10 @@ class Screen {
         ctx.fillText("LOGIN", (c.width/2) - 160, 200);
         break;
       case 3:
-        ctx.fillText("CREATE AN ACCOUNT", (c.width/2) - 400, 200);
+        ctx.fillText("CREATE AN ACCOUNT", (c.width/2) - 530, 200);
         break;
       default:
-        ctx.fillText("HOW DID YOU GET HERE", (c.width/2) - 460, 200);
+        ctx.fillText("HOW DID YOU GET HERE", (c.width/2) - 520, 200);
         break;
     }
 
@@ -237,6 +239,12 @@ class Screen {
     return btns;
   }
 
+  createCreateButtons() {
+    var btns = [];
+    btns.push(new Button("#ff6e00", c.width/2 - 250, 520, 500, 100, "REGISTER"));
+    return btns;
+  }
+
   createResetButton() {
     var btn = new Button("#ff26fb", 20, 20, 200, 80, "HOME");
     return btn;
@@ -252,10 +260,13 @@ class Screen {
     } else {
     switch (this.screenPosition) {
       case 1:
-        this.checkButtons(click, this.screenPosition, this.homeButtons);
+        this.checkButtons(click, this.homeButtons);
         break;
       case 2:
-        this.checkButtons(click, this.screenPosition, this.loginButtons);
+        this.checkButtons(click, this.loginButtons);
+        break;
+      case 3:
+        this.checkButtons(click, this.createButtons);
         break;
       default:
         break;
@@ -263,7 +274,8 @@ class Screen {
   }
   }
 
-  checkButtons(click, screen, array) {
+  checkButtons(click, array) {
+    var screen = this.screenPosition;
     for (var i = 0; i < array.length; i++) {
       var button = array[i];
       if (click.x >= button.x && click.x <= button.x + button.width && click.y >= button.y && click.y <= button.y + button.height) {
@@ -282,8 +294,12 @@ class Screen {
             }
             break;
           case 2:
+            //LOGIN HERE
             console.log(button.text);
             break;
+          case 3:
+            //REGISTER HERE
+            console.log(button.text);
           default:
             break;
         }
@@ -293,11 +309,19 @@ class Screen {
 
   }
 
+  drawHelperText() {
+    ctx.fillStyle="#0eed07";
+    ctx.font="30px Arial";
+    ctx.fillText("Username", 520, 260);
+    ctx.fillText("Password", 520, 400);
+  }
+
   drawLogin() {
     this.drawBackground();
     this.drawStars();
     this.drawTitle();
     this.drawTextInput();
+    this.drawHelperText();
     this.drawLoginButtons();
     this.drawResetButton();
   }
@@ -307,6 +331,7 @@ class Screen {
     this.drawStars();
     this.drawTitle();
     this.drawTextInput();
+    this.drawHelperText();
     this.drawCreateButtons();
     this.drawResetButton();
   }
@@ -328,7 +353,11 @@ class Screen {
 
 }
 
-
+class Connection {
+  constructor() {
+    
+  }
+}
 
 class Star {
   constructor(grav, limits) {
