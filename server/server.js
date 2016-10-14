@@ -15,13 +15,15 @@ var DBController = require('./dbcontroller').DBController;
 
 //Server variables
 var myPort = 8000;
+var pause = false;
+var emitFreq = 50;
 var connected = [];
 
 //Start the server
 server.listen(process.env.PORT || myPort);
 console.log('\n\n----------------------\nServer started.\nListening on PORT: ' + myPort);
 //Creating new objects of the classes
-var gameEngine = new GameEngine();
+var gameEngine = new GameEngine(io);
 var dbController = new DBController(mongoose);
 //dbController.newUser();
 //connect to the db
@@ -31,8 +33,23 @@ console.log('Starting game engine...');
 //var game = new GameEngine();
 //game.start();
 console.log('Game engine started.' + "\n----------------------\n\n");
+dataEmitter();
 
-
+function dataEmitter() {
+  for (var i = 0; i < connected.length; i++) {
+    var client = connected[i];
+    if (client.username != null) {
+      var playerData = gameEngine.getPlayer(client.username);
+      io.to(client.socket).emit('serverupdate', {data: playerData});
+    }
+  }
+  if (!pause) {
+		setTimeout(function () {
+			//Recursively loop
+	        dataEmitter();
+	    }, emitFreq);
+  }
+}
 
 //////SOCKET FUNCTIONS
 //Checks to see if a new connection has been made

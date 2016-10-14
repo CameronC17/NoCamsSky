@@ -375,7 +375,16 @@ class Screen {
 class Game {
   constructor() {
     this.stars = this.createStars(5000);
-    this.position = [2000, 2000];
+    this.position = [0, 0];
+    this.username = "";
+    this.currency = null;
+    this.direction = null;
+    this.health = null;
+    this.items = null;
+    this.level = null;
+    this.ship = null;
+    this.character = null;
+    this.xp = null;
   }
 
   draw() {
@@ -393,6 +402,8 @@ class Game {
   drawPlayer() {
     ctx.fillStyle="#23e564";
     ctx.fillRect((c.width/2) - 105, (c.height / 2) - 5, 10, 10);
+    ctx.font="20px Arial";
+    ctx.fillText(this.position, (c.width/2) - 126, (c.height / 2) + 25);
   }
 
   drawStars() {
@@ -429,11 +440,8 @@ class Game {
       var star = new Star(null, [5000, 5000]);
       tempArray.push(star);
     }
-
     return tempArray;
   }
-
-
 }
 
 class Connection {
@@ -441,6 +449,7 @@ class Connection {
     this.socket = io.connect("http://localhost:8000");
     this.socket.on('connect', this.connectMessage);
     this.socket.on('loginconfirm', this.loginConfirm);
+    this.socket.on('serverupdate', this.serverUpdate);
   }
 
   connectMessage() {
@@ -451,9 +460,24 @@ class Connection {
     if (!data.data) {
       console.log("Wrong username or password");
     } else {
+      screen.txtBoxUsername.style.display = "none";
+      screen.txtBoxPassword.style.display = "none";
       console.log("Logged in");
       screen.screenPosition = 4;
     }
+  }
+
+  serverUpdate(data) {
+    game.position = [data.data.position[0], data.data.position[1]];
+    game.username = data.data.username;
+    game.currency = data.data.currency;
+    game.direction = data.data.direction;
+    game.health = data.data.health;
+    game.items = data.data.items;
+    game.level = data.data.level;
+    game.ship = data.data.ship;
+    game.character = data.data.character;
+    game.xp = data.data.xp;
   }
 
   emit(target, data) {

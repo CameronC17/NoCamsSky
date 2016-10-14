@@ -13,7 +13,11 @@ var UserSchema = new mongoose.Schema({
   xp : { type: Number, required: true },
   ship : { type: Array, required: true },
   items : { type: Array, required: true },
-  character : { type: Number, required: true }
+  character : { type: Number, required: true },
+  position : { type: Array, required: true },
+  direction : { type: Number, required: true },
+  currency : { type: Number, required: true },
+  health : { type: Number, required: true }
 });
 
 */
@@ -37,7 +41,10 @@ class DBController {
       "ship" : [1,1,1,1,1],
       "items" : [1],
       "character" : 1,
-      "position" : [null, null]
+      "position" : [null, null],
+      "direction" : 0,
+      "currency" : 0,
+      "health" : 100
     }, function(err, post){
       if(err) {
         console.log("Unable to create user");
@@ -60,7 +67,10 @@ class DBController {
             "ship" : user.ship,
             "items" : user.items,
             "character" : user.character,
-            "position" : user.position
+            "position" : user.position,
+            "direction" : user.direction,
+            "currency" : user.currency,
+            "health" : user.health
           }
         }
       }

@@ -22,8 +22,12 @@ class GameEngine {
     this.players.push(plyr);
   }
 
+  getPlayer(name) {
+    return this.players[this.players.map(function(e) { return e.username; }).indexOf(name)];
+  }
+
   run() {
-    
+
 
 
     var obj = this;
