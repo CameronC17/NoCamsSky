@@ -8,7 +8,7 @@ var mongoose = require('mongoose');
 
 //Class imports
 var GameEngine = require('./game/engine').GameEngine;
-var DBController = require('./game/dbcontroller').DBController;
+var DBController = require('./dbcontroller').DBController;
 //var Player = require('./game/player').Player;
 
 
@@ -40,7 +40,7 @@ io.on('connection', onConnect);
 
 function onConnect(socket) {
 	util.log(' + New connection. Reference: ' + socket.id);
-	connected.push({"socket" : socket.id, "username" : ""});
+	connected.push({"socket" : socket.id, "username" : null});
 	console.log('There are currently ' + connected.length + ' users online.\n\n');
 
 	//Functions here can only be ran once user is connected
@@ -72,8 +72,9 @@ function loginCallback(data, id) {
   if (data.username != undefined) {
     var userPosition = connected.map(function(e) { return e.socket; }).indexOf(id);
     if (userPosition > -1) {
-      connected[userPosition].name = data.username;
-      util.log("User logged in: " + data.username);
+      connected[userPosition].username = data.username;
+      gameEngine.addPlayer(data);
+      util.log("User logged in: " + data.username + "\n\n");
     }
   }
   io.to(id).emit('loginconfirm', {data: data});

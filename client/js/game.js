@@ -374,17 +374,66 @@ class Screen {
 
 class Game {
   constructor() {
-
+    this.stars = this.createStars(5000);
+    this.position = [2000, 2000];
   }
 
   draw() {
     this.drawBackground();
+    this.drawStars();
+    this.drawPlayer();
+    this.drawDashboard();
   }
 
   drawBackground() {
-    ctx.fillStyle="#53e145";
+    ctx.fillStyle="#000";
     ctx.fillRect(0, 0, c.width, c.height);
   }
+
+  drawPlayer() {
+    ctx.fillStyle="#23e564";
+    ctx.fillRect((c.width/2) - 105, (c.height / 2) - 5, 10, 10);
+  }
+
+  drawStars() {
+    ctx.fillStyle="#fff";
+    for (var i = 0; i < this.stars.length; i++) {
+      var pos = this.getPositionRelative([this.stars[i].x, this.stars[i].y]);
+      if (this.checkInView(pos)) {
+        ctx.fillRect(pos[0], pos[1], this.stars[i].size, this.stars[i].size);
+      }
+    }
+  }
+
+  checkInView(pos) {
+    if (pos[0] > 0 && pos[0] < c.width)
+      return true;
+    return false;
+  }
+
+  getPositionRelative(pos) {
+    var rtnArray = [0, 0];
+    rtnArray[0] = (c.width / 2) + pos[0] - this.position[0];
+    rtnArray[1] = (c.height / 2) + pos[1] - this.position[0];
+    return rtnArray;
+  }
+
+  drawDashboard() {
+    ctx.fillStyle="#6d7075";
+    ctx.fillRect(c.width - 200, 0, 200, c.height);
+  }
+
+  createStars(num) {
+    var tempArray = [];
+    for (var i = 0; i < num; i++) {
+      var star = new Star(null, [5000, 5000]);
+      tempArray.push(star);
+    }
+
+    return tempArray;
+  }
+
+
 }
 
 class Connection {
@@ -403,6 +452,7 @@ class Connection {
       console.log("Wrong username or password");
     } else {
       console.log("Logged in");
+      screen.screenPosition = 4;
     }
   }
 
