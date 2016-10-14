@@ -15,7 +15,6 @@ class DBController {
   }
 
   newUser(data) {
-    //console.log("HELLLLLLLLLLLLLO: " + data);
     this.User.create({"username" : data.username, "password" : data.password}, function(err, post){
       if(err) {
         console.log("Unable to create user")
@@ -25,9 +24,25 @@ class DBController {
     });
   }
 
-
+  login(data, callback, id) {
+    var char = null;
+    this.User.findOne({ 'username': data.username }, function (err, user) {
+      if (user != undefined) {
+        if (data.password === user.password) {
+          char = {
+            "username" : user.username
+          }
+        }
+      }
+      if (char == null) {
+        callback(false, id);
+      }
+      else {
+        callback(char, id);
+      }
+    })
+  }
 }
-
 
 
 exports.DBController = DBController;

@@ -27,8 +27,10 @@ var dbController = new DBController(mongoose);
 //connect to the db
 dbController.connect('mongodb://localhost/nocamssky');
 console.log('Database connection: Successful.');
-console.log('Starting game engine...' + "\n----------------------");
-//game();
+console.log('Starting game engine...');
+//var game = new GameEngine();
+//game.start();
+console.log('Game engine started.' + "\n----------------------\n\n");
 
 
 
@@ -38,17 +40,18 @@ io.on('connection', onConnect);
 
 function onConnect(socket) {
 	util.log(' + New connection. Reference: ' + socket.id);
-	connected.push(socket.id);
+	connected.push({"socket" : socket.id, "username" : ""});
 	console.log('There are currently ' + connected.length + ' users online.\n\n');
 
 	//Functions here can only be ran once user is connected
 	socket.on('disconnect', onDisconnect);
   socket.on('newUser', newUser);
+  socket.on('login', login);
 };
 
 function onDisconnect() {
 	util.log(" - User diconnected. Reference: " + this.id);
-  var userPosition = connected.indexOf(this.id);
+  var userPosition = connected.map(function(e) { return e.socket; }).indexOf(this.id);
   if (userPosition > -1) {
     connected.splice(userPosition, 1);
   } else {
@@ -58,5 +61,20 @@ function onDisconnect() {
 };
 
 function newUser(data) {
-  console.log(data);
+  dbController.newUser(data);
+}
+
+function login(data) {
+  dbController.login(data, loginCallback, this.id);
+}
+
+function loginCallback(data, id) {
+  if (data.username != undefined) {
+    var userPosition = connected.map(function(e) { return e.socket; }).indexOf(id);
+    if (userPosition > -1) {
+      connected[userPosition].name = data.username;
+      util.log("User logged in: " + data.username);
+    }
+  }
+  io.to(id).emit('loginconfirm', {data: data});
 }

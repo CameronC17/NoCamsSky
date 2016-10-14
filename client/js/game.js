@@ -43,8 +43,11 @@ function mainLoop() {
     drawLoading();
     checkLoad();
   } else {
-    screen.draw();
-    //drawSprites();
+    if (screen.screenPosition != 4)
+      screen.draw();
+    else {
+      game.draw();
+    }
   }
 }
 
@@ -107,15 +110,6 @@ function getMousePos(evt) {
   };
 };
 
-
-//game engine #####################################
-function game() {
-
-	setTimeout(function () {
-		game();
-  }, gameTick);
-}
-game();
 
 
 // GAME CLASSES!!!!!!!!!!!!!!!
@@ -254,9 +248,12 @@ class Screen {
   }
 
   checkMouseClick(click) {
+    //first check if its the home button
     if (click.x >= this.resetButton.x && click.x <= this.resetButton.x + this.resetButton.width && click.y >= this.resetButton.y && click.y <= this.resetButton.y + this.resetButton.height) {
       this.txtBoxUsername.style.display = "none";
       this.txtBoxPassword.style.display = "none";
+      this.txtBoxUsername.value = "";
+      this.txtBoxPassword.value = "";
       this.screenPosition = 1;
     } else {
     switch (this.screenPosition) {
@@ -296,7 +293,17 @@ class Screen {
             break;
           case 2:
             //LOGIN HERE
-            console.log(button.text);
+            if (this.txtBoxUsername.value != "" && this.txtBoxPassword.value != "") {
+              var data = {
+                "username" : this.txtBoxUsername.value,
+                "password" : this.txtBoxPassword.value
+              }
+              this.connection.emit('login', data);
+              this.txtBoxUsername.value = "";
+              this.txtBoxPassword.value = "";
+              this.txtBoxUsername.style.display = "none";
+              this.txtBoxPassword.style.display = "none";
+            }
             break;
           case 3:
             //REGISTER HERE
@@ -306,13 +313,15 @@ class Screen {
                 "password" : this.txtBoxPassword.value
               }
               this.connection.emit('newUser', data);
-              this.txtBoxUsername.style.value = "";
-              this.txtBoxPassword.style.value = "";
+              this.txtBoxUsername.value = "";
+              this.txtBoxPassword.value = "";
               this.txtBoxUsername.style.display = "none";
               this.txtBoxPassword.style.display = "none";
               this.screenPosition = 1;
             }
+            break;
           default:
+            console.log("Unknown screen");
             break;
         }
 
@@ -363,14 +372,38 @@ class Screen {
 
 }
 
+class Game {
+  constructor() {
+
+  }
+
+  draw() {
+    this.drawBackground();
+  }
+
+  drawBackground() {
+    ctx.fillStyle="#53e145";
+    ctx.fillRect(0, 0, c.width, c.height);
+  }
+}
+
 class Connection {
   constructor() {
     this.socket = io.connect("http://localhost:8000");
     this.socket.on('connect', this.connectMessage);
+    this.socket.on('loginconfirm', this.loginConfirm);
   }
 
   connectMessage() {
     console.log("We have connect-off");
+  }
+
+  loginConfirm(data) {
+    if (!data.data) {
+      console.log("Wrong username or password");
+    } else {
+      console.log("Logged in");
+    }
   }
 
   emit(target, data) {
@@ -402,3 +435,6 @@ class Button {
 
 //create a new socket.io connection
 var connection = new Connection();
+
+//creates a new game class
+var game = new Game();
