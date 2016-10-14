@@ -39,8 +39,14 @@ function dataEmitter() {
   for (var i = 0; i < connected.length; i++) {
     var client = connected[i];
     if (client.username != null) {
+      //sends the players specific data
       var playerData = gameEngine.getPlayer(client.username);
-      io.to(client.socket).emit('serverupdate', {data: playerData});
+      //sends the other players data
+      var otherPlayers = gameEngine.getOtherPlayers(client.username);
+      io.to(client.socket).emit('serverupdate', {
+        data: playerData,
+        otherPlayerData : otherPlayers
+      });
     }
   }
   if (!pause) {
@@ -64,12 +70,14 @@ function onConnect(socket) {
 	socket.on('disconnect', onDisconnect);
   socket.on('newUser', newUser);
   socket.on('login', login);
+  socket.on('keypress', keypress);
 };
 
 function onDisconnect() {
 	util.log(" - User diconnected. Reference: " + this.id);
   var userPosition = connected.map(function(e) { return e.socket; }).indexOf(this.id);
   if (userPosition > -1) {
+    gameEngine.removePlayer(connected[userPosition].username);
     connected.splice(userPosition, 1);
   } else {
     console.log("Failed to find player disconnect\n\n");
@@ -95,4 +103,13 @@ function loginCallback(data, id) {
     }
   }
   io.to(id).emit('loginconfirm', {data: data});
+}
+
+function keypress(data) {
+  var userPosition = connected.map(function(e) { return e.socket; }).indexOf(this.id);
+  if (userPosition > -1) {
+    gameEngine.getPlayer(connected[userPosition].username).input(data);
+  } else {
+    console.log("Failed to find player\n\n");
+  }
 }
