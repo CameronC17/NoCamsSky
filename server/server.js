@@ -11,8 +11,6 @@ var GameEngine = require('./game/engine').GameEngine;
 var DBController = require('./dbcontroller').DBController;
 //var Player = require('./game/player').Player;
 
-
-
 //Server variables
 var myPort = 8000;
 var pause = false;
