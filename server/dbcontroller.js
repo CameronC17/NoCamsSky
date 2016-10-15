@@ -26,6 +26,7 @@ class DBController {
   constructor(mongodb) {
     this.mongoose = mongodb;
     this.User = require('./models/user');
+    this.Planet = require('./models/planet');
   }
 
   connect(connURL) {
@@ -52,6 +53,27 @@ class DBController {
       } else {
         console.log("New user created: " + data.username);
       }
+    });
+  }
+
+  savePlayerData(player) {
+    var query = {"username":player.username};
+    var newData = {
+      "level" : player.level,
+      "xp" : player.xp,
+      "ship" : player.ship,
+      "items" : player.items,
+      "character" : player.character,
+      "position" : player.position,
+      "direction" : player.direction,
+      "currency" : player.currency,
+      "health" : player.health
+    }
+    this.User.findOneAndUpdate(query, newData, {upsert:true}, function(err, doc){
+      if (err)
+        console.log(err);
+      else
+        console.log("Succesfully saved player data");
     });
   }
 

@@ -75,7 +75,10 @@ function onDisconnect() {
 	util.log(" - User diconnected. Reference: " + this.id);
   var userPosition = connected.map(function(e) { return e.socket; }).indexOf(this.id);
   if (userPosition > -1) {
-    gameEngine.removePlayer(connected[userPosition].username);
+    if (connected[userPosition].username != null) {
+      dbController.savePlayerData(gameEngine.getPlayer(connected[userPosition].username));
+      gameEngine.removePlayer(connected[userPosition].username);
+    }
     connected.splice(userPosition, 1);
   } else {
     console.log("Failed to find player disconnect\n\n");
