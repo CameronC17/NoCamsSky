@@ -559,15 +559,44 @@ class Game {
 
   drawDashboardData() {
     ctx.fillStyle="#fff";
-    ctx.font="16px Arial";
+    ctx.font="18px Arial";
     ctx.fillText("Name: " + this.username, c.width - 190, 30);
-    ctx.fillText("Level: " + this.level, c.width - 190, 50);
-    ctx.fillText("Health: " + this.health, c.width - 190, 70);
-    ctx.fillText("Edds: " + this.currency, c.width - 190, 90);
-    ctx.fillText("Position: " + this.position, c.width - 190, 110);
-    ctx.fillText("Players: " + parseInt(this.otherPlayers.length + 1), c.width - 190, 130);
+    ctx.fillText("Level: " + this.level, c.width - 190, 52);
+    ctx.fillText("Health: " + this.health, c.width - 190, 74);
+    ctx.fillText("Edds: " + this.currency, c.width - 190, 96);
+    ctx.fillText("Position: " + this.position, c.width - 190, 118);
+    ctx.fillText("Players: " + parseInt(this.otherPlayers.length + 1), c.width - 190, 140);
 
+    var xp = 40
+    //xp indicator
+    ctx.fillStyle="#5d93ea";
+    ctx.fillRect(c.width - 185, 166, 165, 20);
+    ctx.fillStyle="#1961d6";
+    ctx.fillRect(c.width - 185, 166, (xp / this.getXPBasedOnLevel(this.level))*165, 20);
 
+  }
+
+  getXPBasedOnLevel(level) {
+    switch (level) {
+      case 1:
+        return 50;
+        break;
+      case 2:
+        return 80;
+        break;
+      case 3:
+        return 130;
+        break;
+      case 4:
+        return 200;
+        break;
+      case 5:
+        return 300;
+        break;
+      default:
+        return 10000;
+        break;
+    }
   }
 
   movementListener() {
