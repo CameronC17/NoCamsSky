@@ -4,6 +4,11 @@ var animFrame = window.requestAnimationFrame || window.webkitRequestAnimationFra
 var c = document.getElementById("canvas");
 var ctx = c.getContext("2d");
 
+//key listener
+window.addEventListener('keyup', function(event) { Key.onKeyup(event); }, false);
+window.addEventListener('keydown', function(event) { Key.onKeydown(event); }, false);
+
+//mouse listener
 window.addEventListener('mousedown', saveMouse, false);
 
 var loaded = false;
@@ -47,6 +52,7 @@ function mainLoop() {
       screen.draw();
     else {
       game.draw();
+      game.movementListener();
     }
   }
 }
@@ -110,7 +116,38 @@ function getMousePos(evt) {
   };
 };
 
+//keyboard stuff
 
+var Key = {
+	//http://www.cambiaresearch.com/articles/15/javascript-char-codes-key-codes
+  _pressed: {},
+  LEFT: 65,
+  UP: 87,
+  RIGHT: 68,
+  DOWN: 83,
+  /*FLEFT: 37,
+  FUP: 38,
+  FRIGHT: 39,
+  FDOWN: 40,
+  DHEAD: 49,
+  DWEAP: 50,
+  DLGHT: 51,
+  DCHST: 52,
+  DBOOT: 53,*/
+  isDown: function(keyCode) {
+    return this._pressed[keyCode];
+  },
+  onKeydown: function(event) {
+    if (event.keycode == '8')
+      event.preventDefault();
+    //game.movementListener();
+    this._pressed[event.keyCode] = true;
+  },
+  onKeyup: function(event) {
+    //game.movementListener();
+    delete this._pressed[event.keyCode];
+  }
+};
 
 // GAME CLASSES!!!!!!!!!!!!!!!
 
@@ -378,18 +415,20 @@ class Game {
     this.position = [0, 0];
     this.username = "";
     this.currency = null;
-    this.direction = null;
+    this.direction = 0;
     this.health = null;
     this.items = null;
     this.level = null;
     this.ship = null;
     this.character = null;
     this.xp = null;
+    this.otherPlayers = [];
   }
 
   draw() {
     this.drawBackground();
     this.drawStars();
+    this.drawOtherPlayers();
     this.drawPlayer();
     this.drawDashboard();
   }
@@ -401,18 +440,54 @@ class Game {
 
   drawPlayer() {
     ctx.fillStyle="#23e564";
-    ctx.fillRect((c.width/2) - 105, (c.height / 2) - 5, 10, 10);
+    ctx.save();
+    var x = (c.width/2) - 105,
+        y = (c.height / 2) - 35,
+        width = 25,
+        height = 50;
+    ctx.translate(x + width / 2, y + height / 2);
+
+    ctx.rotate(this.direction * Math.PI / 180);
+    ctx.translate(-(x + width / 2), -(y + height / 2));
+    ctx.fillRect((c.width/2) - 105, (c.height / 2) - 35, 25, 50);
+    ctx.fillStyle="#ff0000";
+    ctx.fillRect((c.width/2) - 108, (c.height / 2) - 40, 31, 6);
+
+    ctx.restore();
     ctx.font="20px Arial";
-    ctx.fillText(this.position, (c.width/2) - 126, (c.height / 2) + 25);
+    ctx.fillText(this.position, (c.width/2) - 134, (c.height / 2) + 55);
   }
 
   drawStars() {
     ctx.fillStyle="#fff";
+    ctx.font="12px Arial";
     for (var i = 0; i < this.stars.length; i++) {
       var pos = this.getPositionRelative([this.stars[i].x, this.stars[i].y]);
       if (this.checkInView(pos)) {
         ctx.fillRect(pos[0], pos[1], this.stars[i].size, this.stars[i].size);
       }
+    }
+  }
+
+  drawOtherPlayers() {
+    for (var i = 0; i < this.otherPlayers.length; i++) {
+      var otherPlayer = this.otherPlayers[i];
+      var pos = this.getPositionRelative(otherPlayer.position);
+      ctx.fillStyle="#23e564";
+      ctx.save();
+      var x = pos[0],
+          y = pos[1],
+          width = 25,
+          height = 50;
+      ctx.translate(x + width / 2, y + height / 2);
+
+      ctx.rotate(otherPlayer.direction * Math.PI / 180);
+      ctx.translate(-(x + width / 2), -(y + height / 2));
+      ctx.fillRect(x, y, 25, 50);
+      ctx.fillStyle="#ff0000";
+      ctx.fillRect(x - 3, y - 5, 31, 6);
+
+      ctx.restore();
     }
   }
 
@@ -424,14 +499,51 @@ class Game {
 
   getPositionRelative(pos) {
     var rtnArray = [0, 0];
-    rtnArray[0] = (c.width / 2) + pos[0] - this.position[0];
-    rtnArray[1] = (c.height / 2) + pos[1] - this.position[0];
+    rtnArray[0] = (c.width / 2) + pos[0] - this.position[0] - 105;
+    rtnArray[1] = (c.height / 2) + pos[1] - this.position[1] - 35;
     return rtnArray;
   }
 
   drawDashboard() {
+    this.drawDashboardBackground();
+    this.drawDashboardData();
+  }
+
+  drawDashboardBackground() {
     ctx.fillStyle="#6d7075";
     ctx.fillRect(c.width - 200, 0, 200, c.height);
+    ctx.fillStyle="#000";
+    ctx.fillRect(c.width-200, 200, 200, 2);
+    ctx.fillRect(c.width-200, 400, 200, 2);
+  }
+
+  drawDashboardData() {
+    ctx.fillStyle="#fff";
+    ctx.font="16px Arial";
+    ctx.fillText("Name: " + this.username, c.width - 190, 30);
+    ctx.fillText("Level: " + this.level, c.width - 190, 50);
+    ctx.fillText("Health: " + this.health, c.width - 190, 70);
+    ctx.fillText("Edds: " + this.currency, c.width - 190, 90);
+    ctx.fillText("Position: " + this.position, c.width - 190, 110);
+    ctx.fillText("Players: " + this.otherPlayers.length, c.width - 190, 130);
+
+
+  }
+
+  movementListener() {
+    var keyPresses = {
+      "up" : false,
+      "right" : false,
+      "down" : false,
+      "left" : false
+    };
+    //Directions to move in
+    if (Key.isDown(Key.UP)) keyPresses.up = true;
+    if (Key.isDown(Key.RIGHT)) keyPresses.right = true;
+    if (Key.isDown(Key.DOWN)) keyPresses.down = true;
+    if (Key.isDown(Key.LEFT)) keyPresses.left = true;
+    if ((keyPresses.up) || (keyPresses.down) || (keyPresses.left) || (keyPresses.right))
+      connection.emit('keypress', keyPresses);
   }
 
   createStars(num) {
@@ -478,6 +590,10 @@ class Connection {
     game.ship = data.data.ship;
     game.character = data.data.character;
     game.xp = data.data.xp;
+
+    game.otherPlayers = data.otherPlayerData;
+
+    //console.log(game.position);
   }
 
   emit(target, data) {
