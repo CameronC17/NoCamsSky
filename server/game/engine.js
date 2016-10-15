@@ -9,17 +9,24 @@ var Space = require('./space').Space;
 var Player = require('./player').Player;
 
 class GameEngine {
-  constructor() {
+  constructor(dbConnection) {
     this.space = new Space();
+    this.dbConnection = dbConnection;
     this.players = [];
     this.pause = false;
     this.gameTick= 50;
+    this.setPlanets();
     this.run();
   }
 
   addPlayer(player) {
     var plyr = new Player(player);
     this.players.push(plyr);
+  }
+
+  setPlanets(data) {
+    var obj = this.space.getThis();
+    this.dbConnection.getPlanets(this.space.setPlanets, obj);
   }
 
   getPlayer(name) {
@@ -39,6 +46,19 @@ class GameEngine {
         if (other.isClose(player.position)) {
           rtnArray.push({"username" : other.username, "position" : other.position, "direction" : other.direction, "health" : other.health})
         }
+      }
+    }
+    return rtnArray;
+  }
+
+  getNearbyPlanets(name) {
+    var player = this.getPlayer(name);
+    var rtnArray = [];
+    var planets = this.space.getPlanets();
+    for (var i = 0; i < planets.length; i++) {
+      var planet = planets[i];
+      if (player.isClose(planet.position)) {
+        rtnArray.push(planet)
       }
     }
     return rtnArray;
@@ -66,6 +86,9 @@ class GameEngine {
       }
     }
   }
+
+
+
 
 
 }

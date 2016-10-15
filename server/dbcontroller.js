@@ -104,6 +104,20 @@ class DBController {
       }
     })
   }
+
+  getPlanets(callback, obj) {
+    this.Planet.find({}, function(err, planets){
+        if(err){
+          console.log(err);
+        } else{
+            //console.log('Retrieved list of planets');
+            callback(planets, obj);
+        }
+    })
+  }
+
+
+
 }
 
 

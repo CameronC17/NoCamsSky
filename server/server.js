@@ -21,15 +21,16 @@ var connected = [];
 server.listen(process.env.PORT || myPort);
 console.log('\n\n----------------------\nServer started.\nListening on PORT: ' + myPort);
 //Creating new objects of the classes
-var gameEngine = new GameEngine(io);
 var dbController = new DBController(mongoose);
+console.log('Starting game engine...');
+var gameEngine = new GameEngine(dbController);
 //dbController.newUser();
 //connect to the db
 dbController.connect('mongodb://localhost/nocamssky');
 console.log('Database connection: Successful.');
-console.log('Starting game engine...');
-//var game = new GameEngine();
-//game.start();
+//get the planets from the database
+//dbController.getPlanets(gameEngine.setPlanets);
+
 console.log('Game engine started.' + "\n----------------------\n\n");
 dataEmitter();
 
@@ -41,9 +42,12 @@ function dataEmitter() {
       var playerData = gameEngine.getPlayer(client.username);
       //sends the other players data
       var otherPlayers = gameEngine.getOtherPlayers(client.username);
+      //gets information on planets
+      var planets = gameEngine.getNearbyPlanets(client.username);
       io.to(client.socket).emit('serverupdate', {
         data: playerData,
-        otherPlayerData : otherPlayers
+        otherPlayerData : otherPlayers,
+        planetData : planets
       });
     }
   }

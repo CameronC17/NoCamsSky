@@ -34,7 +34,7 @@ var planetArray = [
     "name" : "Lamion",
     "size" : 60,
     "type" : "Waste",
-    "position" : [2900, 500]
+    "position" : [2200, 3300]
   }
 ];
 

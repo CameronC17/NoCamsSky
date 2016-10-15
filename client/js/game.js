@@ -422,12 +422,15 @@ class Game {
     this.ship = null;
     this.character = null;
     this.xp = null;
+
     this.otherPlayers = [];
+    this.planets = [];
   }
 
   draw() {
     this.drawBackground();
     this.drawStars();
+    this.drawPlanets();
     this.drawOtherPlayers();
     this.drawPlayer();
     this.drawDashboard();
@@ -504,6 +507,43 @@ class Game {
     return rtnArray;
   }
 
+  drawPlanets() {
+    for (var i = 0; i < this.planets.length; i++) {
+      var planet = this.planets[i];
+      var pos = this.getPositionRelative(planet.position);
+      var radius = planet.size;
+
+      switch (planet.type) {
+        case "Earth":
+          ctx.fillStyle="#a05555";
+          ctx.strokeStyle="#774747";
+          break;
+        case "Ice":
+          ctx.fillStyle="#49e3ff";
+          ctx.strokeStyle="#3496a8";
+          break;
+        case "Fire":
+          ctx.fillStyle="#ffa100";
+          ctx.strokeStyle="#e20d0d";
+          break;
+        case "Waste":
+          ctx.fillStyle="#318709";
+          ctx.strokeStyle="#236006";
+          break;
+        default:
+          ctx.fillStyle="#f6ff00";
+          ctx.strokeStyle="#494943";
+          break;
+      }
+
+      ctx.beginPath();
+      ctx.arc(pos[0], pos[1], radius, 0, 2 * Math.PI, false);
+      ctx.fill();
+      ctx.lineWidth = 5;
+      ctx.stroke();
+    }
+  }
+
   drawDashboard() {
     this.drawDashboardBackground();
     this.drawDashboardData();
@@ -525,7 +565,7 @@ class Game {
     ctx.fillText("Health: " + this.health, c.width - 190, 70);
     ctx.fillText("Edds: " + this.currency, c.width - 190, 90);
     ctx.fillText("Position: " + this.position, c.width - 190, 110);
-    ctx.fillText("Players: " + this.otherPlayers.length, c.width - 190, 130);
+    ctx.fillText("Players: " + parseInt(this.otherPlayers.length + 1), c.width - 190, 130);
 
 
   }
@@ -592,8 +632,8 @@ class Connection {
     game.xp = data.data.xp;
 
     game.otherPlayers = data.otherPlayerData;
+    game.planets = data.planetData;
 
-    //console.log(game.position);
   }
 
   emit(target, data) {

@@ -7,6 +7,7 @@
 class Space {
   constructor() {
     this.size = 5000;
+    this.planets = [];
   }
 
   checkMove(position, speed, direction) {
@@ -54,6 +55,17 @@ class Space {
     return newPos;
   }
 
+  getThis() {
+    return this;
+  }
+
+  setPlanets(data, obj) {
+    obj.planets = data;
+  }
+
+  getPlanets() {
+    return this.planets;
+  }
 
 
 }
