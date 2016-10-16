@@ -538,7 +538,8 @@ class Game {
 
       //planet text
       ctx.font="26px Arial";
-      ctx.fillText(planet.name, pos[0] + ((pos[0] / 500) * (radius + 10)), pos[1] - radius/3);
+      var textPosX = this.getPlanetTextPosition(pos[0], radius);
+      ctx.fillText(planet.name, textPosX, pos[1] - radius/3);
       ctx.fillText(radius + "km sq", pos[0] + radius + 10, (pos[1] - radius/3) + 30);
       ctx.fillText(planet.type, pos[0] + radius + 10, (pos[1] - radius/3) + 60);
       ctx.fillText(pos, pos[0] + radius + 10, (pos[1] - radius/3) + 90);
@@ -551,6 +552,15 @@ class Game {
       ctx.lineWidth = 5;
       ctx.stroke();
     }
+  }
+
+  getPlanetTextPosition(pos, radius) {
+    if (pos < 150)
+      return (pos + ((pos / 150) * (radius + 10)));
+    else if (pos > 750)
+      return -(pos + ((pos / 150) * (radius + 10)));
+    else
+      return pos + radius + 10;
   }
 
   drawDashboard() {
