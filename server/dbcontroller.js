@@ -1,7 +1,7 @@
 //##############################################//
 //					Database controller Class  		      //
 //                			            	        	//
-//			© CAMERON CHALMERS, 2015	  	         	//
+//			© CAMERON CHALMERS, 2016	  	         	//
 //##############################################//
 
 /*
@@ -73,7 +73,7 @@ class DBController {
       if (err)
         console.log(err);
       else
-        console.log("Succesfully saved player data");
+        console.log("Succesfully saved player data for user: " + player.username + "\n\n");
     });
   }
 

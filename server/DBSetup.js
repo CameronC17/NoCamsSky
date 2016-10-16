@@ -35,6 +35,12 @@ var planetArray = [
     "size" : 60,
     "type" : "Waste",
     "position" : [2200, 3300]
+  },
+  {
+    "name" : "Super Galacticus",
+    "size" : 180,
+    "type" : "Ice",
+    "position" : [3400, 900]
   }
 ];
 

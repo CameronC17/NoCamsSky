@@ -58,7 +58,7 @@ class Player {
   }
 
   isClose(pos) {
-    if (this.position[0] > pos[0] - 700 && this.position[0] < pos[0] + 700 && this.position[1] > pos[1] - 500 && this.position[1] < pos[1] + 500)
+    if (this.position[0] > pos[0] - 700 && this.position[0] < pos[0] + 700 && this.position[1] > pos[1] - 700 && this.position[1] < pos[1] + 700)
       return true;
     return false;
   }
