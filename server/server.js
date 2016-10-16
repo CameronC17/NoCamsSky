@@ -110,6 +110,8 @@ function loginCallback(data, id) {
   io.to(id).emit('loginconfirm', {data: data});
 }
 
+
+
 function keypress(data) {
   var userPosition = connected.map(function(e) { return e.socket; }).indexOf(this.id);
   if (userPosition > -1) {

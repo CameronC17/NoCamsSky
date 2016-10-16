@@ -101,8 +101,10 @@ animFrame(recursiveAnim);
 function saveMouse(e) {
   var pos = getMousePos(e);
   if (pos.x >= 0 && pos.x <= c.width && pos.y >= 0 && pos.y <= c.height) {
-    if (screen != null) {
+    if (screen.screenPosition != 4) {
       screen.checkMouseClick(pos);
+    } else {
+      game.checkMouseClick(pos);
     }
   }
 }
@@ -412,6 +414,9 @@ class Screen {
 class Game {
   constructor() {
     this.stars = this.createStars(5000);
+    this.buttons = this.createButtons();
+    this.landButton = new Button("#ffee00", c.width - 190, 290, 175, 30, "LAND");
+
     this.position = [0, 0];
     this.username = "";
     this.currency = null;
@@ -425,6 +430,7 @@ class Game {
 
     this.otherPlayers = [];
     this.planets = [];
+    this.nearbyPlanet = null;
   }
 
   draw() {
@@ -434,6 +440,21 @@ class Game {
     this.drawOtherPlayers();
     this.drawPlayer();
     this.drawDashboard();
+  }
+
+  createButtons() {
+    var rtnArray = [];
+    //land on planet button
+    return rtnArray;
+  }
+
+  drawButton(btn) {
+    var button = btn;
+    ctx.fillStyle=button.colour;
+    ctx.fillRect(button.x, button.y, button.width, button.height);
+    ctx.font="30px Arial";
+    ctx.fillStyle="#000";
+    ctx.fillText(button.text, button.x + (button.width/2) - (ctx.measureText(button.text).width / 2), button.y + (button.height/2) + (parseInt(ctx.font) / 3));
   }
 
   drawBackground() {
@@ -542,7 +563,6 @@ class Game {
       ctx.fillText(planet.name, textPosX, pos[1] - radius/3);
       ctx.fillText(radius + "k km sq", textPosX, (pos[1] - radius/3) + 30);
       ctx.fillText(planet.type, textPosX, (pos[1] - radius/3) + 60);
-      ctx.fillText(pos, textPosX, (pos[1] - radius/3) + 90);
 
       //actual planet
       ctx.beginPath();
@@ -567,7 +587,7 @@ class Game {
   drawDashboard() {
     this.drawDashboardBackground();
     this.drawDashboardData();
-    this.drawPlanetData();
+    this.drawPlanetDashboardData();
   }
 
   drawDashboardBackground() {
@@ -598,10 +618,9 @@ class Game {
     //var textSize = ctx.measureText(xpText).width;
     ctx.fillStyle="#fff";
     ctx.fillText(xpText, c.width - 180, 183);
-
   }
 
-  drawPlanetData() {
+  drawPlanetDashboardData() {
     ctx.font="28px Arial";
     ctx.fillStyle="#fff";
     ctx.fillText("No available", c.width - 175, 260);
@@ -618,12 +637,17 @@ class Game {
         ctx.fillText("Planet name: " + planet.name, c.width - 190, 230);
         ctx.fillText("Size: " + planet.size + "k km sq", c.width - 190, 250);
         ctx.fillText("Type: " + planet.type, c.width - 190, 270);
-        ctx.fillStyle="#ffee00";
-        ctx.fillRect(c.width - 190, 290, 175, 30);
-        ctx.fillStyle="#ff0000";
-        ctx.font="30px Arial";
-        ctx.fillText("LAND", c.width - 140, 316);
+        this.drawButton(this.landButton);
+        this.nearbyPlanet = planet.name;
       }
+    }
+  }
+
+  checkMouseClick(pos) {
+    //first check land button
+    var landBtn = this.landButton;
+    if (pos.x > landBtn.x && pos.x < landBtn.x + landBtn.width & pos.y > landBtn.y && pos.y < landBtn.y + landBtn.height && this.nearbyPlanet != null) {
+      console.log("LAND BT");
     }
   }
 
@@ -662,8 +686,10 @@ class Game {
     if (Key.isDown(Key.RIGHT)) keyPresses.right = true;
     if (Key.isDown(Key.DOWN)) keyPresses.down = true;
     if (Key.isDown(Key.LEFT)) keyPresses.left = true;
-    if ((keyPresses.up) || (keyPresses.down) || (keyPresses.left) || (keyPresses.right))
+    if ((keyPresses.up) || (keyPresses.down) || (keyPresses.left) || (keyPresses.right)) {
       connection.emit('keypress', keyPresses);
+      this.nearbyPlanet = null;
+    }
   }
 
   createStars(num) {
