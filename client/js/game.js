@@ -542,6 +542,7 @@ class Game {
       ctx.fillText(planet.name, textPosX, pos[1] - radius/3);
       ctx.fillText(radius + "k km sq", textPosX, (pos[1] - radius/3) + 30);
       ctx.fillText(planet.type, textPosX, (pos[1] - radius/3) + 60);
+      ctx.fillText(pos, textPosX, (pos[1] - radius/3) + 90);
 
       //actual planet
       ctx.beginPath();
@@ -566,6 +567,7 @@ class Game {
   drawDashboard() {
     this.drawDashboardBackground();
     this.drawDashboardData();
+    this.drawPlanetData();
   }
 
   drawDashboardBackground() {
@@ -573,7 +575,7 @@ class Game {
     ctx.fillRect(c.width - 200, 0, 200, c.height);
     ctx.fillStyle="#000";
     ctx.fillRect(c.width-200, 200, 200, 2);
-    ctx.fillRect(c.width-200, 400, 200, 2);
+    ctx.fillRect(c.width-200, 340, 200, 2);
   }
 
   drawDashboardData() {
@@ -597,6 +599,32 @@ class Game {
     ctx.fillStyle="#fff";
     ctx.fillText(xpText, c.width - 180, 183);
 
+  }
+
+  drawPlanetData() {
+    ctx.font="28px Arial";
+    ctx.fillStyle="#fff";
+    ctx.fillText("No available", c.width - 175, 260);
+    ctx.fillText("planets.", c.width - 150, 290);
+    for (var i = 0; i < this.planets.length; i++) {
+      var planet = this.planets[i];
+      var pos = this.getPositionRelative(planet.position);
+      //check if were over the planet
+      if (pos[0] > 500 - (planet.size) && pos[0] < 500 + (planet.size) && pos[1] > 400 - (planet.size) && pos[1] < 400 + (planet.size)){
+        ctx.fillStyle="#6d7075";
+        ctx.fillRect(c.width - 200, 225, 200, 100);
+        ctx.fillStyle="#fff";
+        ctx.font="18px Arial";
+        ctx.fillText("Planet name: " + planet.name, c.width - 190, 230);
+        ctx.fillText("Size: " + planet.size + "k km sq", c.width - 190, 250);
+        ctx.fillText("Type: " + planet.type, c.width - 190, 270);
+        ctx.fillStyle="#ffee00";
+        ctx.fillRect(c.width - 190, 290, 175, 30);
+        ctx.fillStyle="#ff0000";
+        ctx.font="30px Arial";
+        ctx.fillText("LAND", c.width - 140, 316);
+      }
+    }
   }
 
   getXPBasedOnLevel(level) {
