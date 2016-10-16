@@ -540,10 +540,8 @@ class Game {
       ctx.font="26px Arial";
       var textPosX = this.getPlanetTextPosition(pos[0], radius);
       ctx.fillText(planet.name, textPosX, pos[1] - radius/3);
-      ctx.fillText(radius + "km sq", pos[0] + radius + 10, (pos[1] - radius/3) + 30);
-      ctx.fillText(planet.type, pos[0] + radius + 10, (pos[1] - radius/3) + 60);
-      ctx.fillText(pos, pos[0] + radius + 10, (pos[1] - radius/3) + 90);
-      //ctx.fillText(planet.name, pos[0] + radius + 10, pos[1] - radius/3);
+      ctx.fillText(radius + "k km sq", textPosX, (pos[1] - radius/3) + 30);
+      ctx.fillText(planet.type, textPosX, (pos[1] - radius/3) + 60);
 
       //actual planet
       ctx.beginPath();
@@ -557,8 +555,10 @@ class Game {
   getPlanetTextPosition(pos, radius) {
     if (pos < 150)
       return (pos + ((pos / 150) * (radius + 10)));
-    else if (pos > 750)
-      return -(pos + ((pos / 150) * (radius + 10)));
+    else if (pos > 700 && pos < 850)
+      return (pos + radius + 10 -  (pos - 700));
+    else if (pos > 850)
+        return pos;
     else
       return pos + radius + 10;
   }
