@@ -40,15 +40,23 @@ function dataEmitter() {
     if (client.username != null) {
       //sends the players specific data
       var playerData = gameEngine.getPlayer(client.username);
-      //sends the other players data
-      var otherPlayers = gameEngine.getOtherPlayers(client.username);
-      //gets information on planets
-      var planets = gameEngine.getNearbyPlanets(client.username);
-      io.to(client.socket).emit('serverupdate', {
-        data: playerData,
-        otherPlayerData : otherPlayers,
-        planetData : planets
-      });
+      if (playerData.landPosition == null) {
+        //sends the other players data
+        var otherPlayers = gameEngine.getOtherPlayers(client.username);
+        //gets information on planets
+        var planets = gameEngine.getNearbyPlanets(client.username);
+        io.to(client.socket).emit('serverupdate', {
+          data: playerData,
+          otherPlayerData : otherPlayers,
+          planetData : planets
+        });
+      } else {
+        var terrainData = gameEngine.getTerrainData(client.username);
+        io.to(client.socket).emit('landserveremit', {
+          data: playerData,
+          terrainData : terrainData
+        });
+      }
     }
   }
   if (!pause) {
@@ -73,6 +81,7 @@ function onConnect(socket) {
   socket.on('newUser', newUser);
   socket.on('login', login);
   socket.on('keypress', keypress);
+  socket.on('landAttempt', landAttempt);
 };
 
 function onDisconnect() {
@@ -110,7 +119,14 @@ function loginCallback(data, id) {
   io.to(id).emit('loginconfirm', {data: data});
 }
 
-
+function landAttempt(data) {
+  var userPosition = connected.map(function(e) { return e.socket; }).indexOf(this.id);
+  if (userPosition > -1) {
+    if (connected[userPosition].username != null) {
+      gameEngine.landAttempt(connected[userPosition].username, data);
+    }
+  }
+}
 
 function keypress(data) {
   var userPosition = connected.map(function(e) { return e.socket; }).indexOf(this.id);

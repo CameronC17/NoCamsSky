@@ -417,6 +417,8 @@ class Game {
     this.buttons = this.createButtons();
     this.landButton = new Button("#ffee00", c.width - 190, 290, 175, 30, "LAND");
 
+    this.connected = 1;
+
     this.position = [0, 0];
     this.username = "";
     this.currency = null;
@@ -431,15 +433,83 @@ class Game {
     this.otherPlayers = [];
     this.planets = [];
     this.nearbyPlanet = null;
+
+    this.terrain = null;
+    this.terrainType = null;
+    this.landPosition = [0,0];
   }
 
   draw() {
-    this.drawBackground();
-    this.drawStars();
-    this.drawPlanets();
-    this.drawOtherPlayers();
-    this.drawPlayer();
-    this.drawDashboard();
+    if (this.terrain == null) {
+      this.drawBackground();
+      this.drawStars();
+      this.drawPlanets();
+      this.drawOtherPlayers();
+      this.drawPlayer();
+      this.drawDashboard();
+    } else {
+      this.drawTerrain();
+      this.drawLandPlayer();
+      this.drawDashboard();
+    }
+  }
+
+  drawTerrain() {
+    ctx.fillStyle="#fff";
+    ctx.fillRect(0, 0, c.width, c.height);
+    /*ctx.font="10px Arial";
+    for (var i = 0; i < this.terrain.length; i++) {
+      ctx.fillText(this.terrain[i], 10, 10 + (i * 12));
+    }*/
+    for (var y = 0; y < this.terrain.length; y++) {
+      var row = this.terrain[y];
+      for (var x = 0; x < row.length; x++) {
+        ctx.fillStyle=this.getTileColour(row[x]);
+        ctx.fillRect(x * 50, y * 50, 50, 50);
+      }
+    }
+  }
+
+  drawLandPlayer() {
+    ctx.fillStyle="#a0099e";
+    var yPos = Math.floor(this.terrain.length / 2);
+    var xPos = Math.floor(this.terrain[0].length / 2);
+    ctx.fillRect(xPos * 50 + 7, yPos * 50 + 7, 36, 36);
+  }
+
+  getTileColour(val) {
+    switch (val) {
+      case "1":
+        return "#a07975";
+        break;
+      case "2":
+        return "#7a615e";
+        break;
+      case "3":
+        return "#b7db62";
+        break;
+      case "4":
+        return "#8adb62";
+        break;
+      case "5":
+        return "#6fdb39";
+        break;
+      case "6":
+        return "#09a046";
+        break;
+      case "w":
+        return "#000";
+        break;
+      case "o":
+        return "#0cfff2";
+        break;
+      case "d":
+        return "#ffb20c";
+        break;
+      default:
+        return "#74787a";
+        break;
+    }
   }
 
   createButtons() {
@@ -646,8 +716,8 @@ class Game {
   checkMouseClick(pos) {
     //first check land button
     var landBtn = this.landButton;
-    if (pos.x > landBtn.x && pos.x < landBtn.x + landBtn.width & pos.y > landBtn.y && pos.y < landBtn.y + landBtn.height && this.nearbyPlanet != null) {
-      console.log("LAND BT");
+    if (pos.x > landBtn.x && pos.x < landBtn.x + landBtn.width & pos.y > landBtn.y && pos.y < landBtn.y + landBtn.height && this.nearbyPlanet != null && this.terrain == null) {
+      connection.emit('landAttempt', this.nearbyPlanet);
     }
   }
 
@@ -708,6 +778,7 @@ class Connection {
     this.socket.on('connect', this.connectMessage);
     this.socket.on('loginconfirm', this.loginConfirm);
     this.socket.on('serverupdate', this.serverUpdate);
+    this.socket.on('landserveremit', this.landServerEmit);
   }
 
   connectMessage() {
@@ -726,6 +797,7 @@ class Connection {
   }
 
   serverUpdate(data) {
+    game.terrain = null;
     game.position = [data.data.position[0], data.data.position[1]];
     game.username = data.data.username;
     game.currency = data.data.currency;
@@ -740,6 +812,23 @@ class Connection {
     game.otherPlayers = data.otherPlayerData;
     game.planets = data.planetData;
 
+  }
+
+  landServerEmit(data) {
+    game.position = [data.data.position[0], data.data.position[1]];
+    game.username = data.data.username;
+    game.currency = data.data.currency;
+    game.direction = data.data.direction;
+    game.health = data.data.health;
+    game.items = data.data.items;
+    game.level = data.data.level;
+    game.ship = data.data.ship;
+    game.character = data.data.character;
+    game.xp = data.data.xp;
+
+    game.landPosition = data.data.landPosition;
+    game.terrain = data.terrainData[0];
+    game.terrainType = data.terrainData[1];
   }
 
   emit(target, data) {

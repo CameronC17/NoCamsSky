@@ -21,6 +21,8 @@ class GameEngine {
 
   addPlayer(player) {
     var plyr = new Player(player);
+    player.location = "space";
+    player.landPosition = null;
     this.players.push(plyr);
   }
 
@@ -51,6 +53,11 @@ class GameEngine {
     return rtnArray;
   }
 
+  getTerrainData(name) {
+    var player = this.getPlayer(name);
+    return this.space.getTerrainData(player.landPosition, player.location);
+  }
+
   getNearbyPlanets(name) {
     var player = this.getPlayer(name);
     var rtnArray = [];
@@ -61,7 +68,13 @@ class GameEngine {
         rtnArray.push(planet)
       }
     }
+    //get players on planet here
     return rtnArray;
+  }
+
+  landAttempt(name, planet) {
+    var player = this.getPlayer(name);
+    this.space.landAttempt(player, planet);
   }
 
   run() {
