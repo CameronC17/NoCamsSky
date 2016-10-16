@@ -131,7 +131,12 @@ function landAttempt(data) {
 function keypress(data) {
   var userPosition = connected.map(function(e) { return e.socket; }).indexOf(this.id);
   if (userPosition > -1) {
-    gameEngine.getPlayer(connected[userPosition].username).input(data);
+    var player = gameEngine.getPlayer(connected[userPosition].username);
+    if (player.landPosition == null) {
+      player.input(data);
+    } else {
+      player.inputTerrainMove(data);
+    }
   } else {
     console.log("Failed to find player\n\n");
   }

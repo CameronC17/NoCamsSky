@@ -92,18 +92,20 @@ class GameEngine {
 
   checkMovement() {
     for (var i = 0; i < this.players.length; i++) {
-      if (this.players[i].readyToMove) {
-        var nextMove = this.space.checkMove(this.players[i].position, 1, this.players[i].direction);
-        this.players[i].position = nextMove;
+      if (this.players[i].landPosition == null) {
+        if (this.players[i].readyToMove) {
+          var nextMove = this.space.checkMove(this.players[i].position, 1, this.players[i].direction);
+          this.players[i].position = nextMove;
+          this.players[i].resetMovement();
+        }
+      } else if (this.players[i].readyToMove) {
+        var nextMove = this.space.checkTerrainMove(this.players[i].landPosition, this.players[i].terrainMovement, this.players[i].location);
+        this.players[i].landPosition = nextMove;
+        this.players[i].lastMove = new Date().getTime();
         this.players[i].resetMovement();
       }
     }
   }
-
-
-
-
-
 }
 
 

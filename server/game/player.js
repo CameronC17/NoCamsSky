@@ -57,6 +57,11 @@ class Player {
     }
   }
 
+  inputTerrainMove(data) {
+    this.terrainMovement = data;
+    this.readyToMove = true;
+  }
+
   isClose(pos) {
     if (this.position[0] > pos[0] - 700 && this.position[0] < pos[0] + 700 && this.position[1] > pos[1] - 700 && this.position[1] < pos[1] + 700)
       return true;
@@ -65,6 +70,12 @@ class Player {
 
   resetMovement(){
     this.movement = {
+      "up": false,
+      "down": false,
+      "left": false,
+      "right": false
+    };
+    this.terrainMovement = {
       "up": false,
       "down": false,
       "left": false,

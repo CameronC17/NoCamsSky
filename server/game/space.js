@@ -19,6 +19,36 @@ class Space {
     return attemptPosition;
   }
 
+  checkTerrainMove(pos, data, terrain) {
+    var terrID = -1;
+    for (var i = 0; i < this.terrain.length; i++) {
+      if (this.terrain[i] != null) {
+        if (this.terrain[i].name == terrain)
+          terrID = i;
+      }
+    }
+    var oldPosX = pos[0];
+    var oldPosY = pos[1];
+    var newPos = pos;
+    if (terrID > -1) {
+      if (data.up)
+        newPos[1]--;
+      else if (data.down)
+        newPos[1]++;
+      else if (data.left)
+        newPos[0]--;
+      else if (data.right)
+        newPos[0]++;
+      //check for collision or whatever
+      var terrain = this.terrain[terrID].terrain;
+      if (terrain[newPos[1]][newPos[0]] == "w" || terrain[newPos[1]][newPos[0]] == "d") {
+        return [oldPosX, oldPosY];
+      } else {
+        return newPos;
+      }
+    }
+  }
+
   moveShip(position, speed, direction) {
     var newPos = position;
     if (direction < 15) {
