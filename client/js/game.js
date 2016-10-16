@@ -536,6 +536,15 @@ class Game {
           break;
       }
 
+      //planet text
+      ctx.font="26px Arial";
+      ctx.fillText(planet.name, pos[0] + ((pos[0] / 500) * (radius + 10)), pos[1] - radius/3);
+      ctx.fillText(radius + "km sq", pos[0] + radius + 10, (pos[1] - radius/3) + 30);
+      ctx.fillText(planet.type, pos[0] + radius + 10, (pos[1] - radius/3) + 60);
+      ctx.fillText(pos, pos[0] + radius + 10, (pos[1] - radius/3) + 90);
+      //ctx.fillText(planet.name, pos[0] + radius + 10, pos[1] - radius/3);
+
+      //actual planet
       ctx.beginPath();
       ctx.arc(pos[0], pos[1], radius, 0, 2 * Math.PI, false);
       ctx.fill();
@@ -567,12 +576,16 @@ class Game {
     ctx.fillText("Position: " + this.position, c.width - 190, 118);
     ctx.fillText("Players: " + parseInt(this.otherPlayers.length + 1), c.width - 190, 140);
 
-    var xp = 40
+    var xpTarget = this.getXPBasedOnLevel(this.level);
     //xp indicator
     ctx.fillStyle="#5d93ea";
     ctx.fillRect(c.width - 185, 166, 165, 20);
     ctx.fillStyle="#1961d6";
-    ctx.fillRect(c.width - 185, 166, (xp / this.getXPBasedOnLevel(this.level))*165, 20);
+    ctx.fillRect(c.width - 185, 166, (this.xp / xpTarget)*165, 20);
+    var xpText = "XP: " + this.xp + "/" + xpTarget;
+    //var textSize = ctx.measureText(xpText).width;
+    ctx.fillStyle="#fff";
+    ctx.fillText(xpText, c.width - 180, 183);
 
   }
 
