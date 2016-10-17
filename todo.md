@@ -6,3 +6,4 @@
 4. dont allow players to spawn in damage on land
 5. get players on planet (do it within engine/getNearbyPlanets)
 6. add a proper players online count
+7. make planets show how many players on the planet

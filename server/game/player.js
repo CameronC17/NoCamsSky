@@ -31,6 +31,10 @@ class Player {
     }
     this.lastInput = null;
     this.readyToMove = false;
+
+    this.location = "space";
+    this.landPosition = null;
+    this.lastMove = null;
     //console.log(this);
   }
 

@@ -19,7 +19,8 @@ class Space {
     return attemptPosition;
   }
 
-  checkTerrainMove(pos, data, terrain) {
+  checkTerrainMove(player, data, terrain) {
+    var pos = player.landPosition;
     var terrID = -1;
     for (var i = 0; i < this.terrain.length; i++) {
       if (this.terrain[i] != null) {
@@ -46,9 +47,15 @@ class Space {
         if (newPos[0] > 0 && newPos[0] < (this.terrain[terrID].size * 8)) {
           if (terrain[newPos[1]][newPos[0]] == "w") {
             return [oldPosX, oldPosY];
+          } else if(terrain[newPos[1]][newPos[0]] == "d") {
+            player.health -= 5;
+            return [oldPosX, oldPosY];
           } else {
             return newPos;
           }
+
+
+
         } else {
           return [oldPosX, newPos[1]];
         }
@@ -169,9 +176,13 @@ class Space {
     while (suitablePosition[0] == null && suitablePosition[1] == null) {
       var xPos = (Math.floor(Math.random() * planetSize) + 1);
       var yPos = (Math.floor(Math.random() * planetSize) + 1);
-      if (this.terrain[planetID].terrain[yPos][xPos] != "d") {
-        suitablePosition[0] = xPos;
-        suitablePosition[1] = yPos;
+      if (xPos < 0 || yPos < 0 || xPos > (planetSize) - 1 || yPos > (planetSize * 8) - 1) {
+        console.log("tried to put a player out of bounds");
+      } else {
+        if (this.terrain[planetID].terrain[yPos][xPos] != "d") {
+          suitablePosition[0] = xPos;
+          suitablePosition[1] = yPos;
+        }
       }
     }
     return suitablePosition;

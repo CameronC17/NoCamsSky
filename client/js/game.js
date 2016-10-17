@@ -424,6 +424,7 @@ class Game {
     this.currency = null;
     this.direction = 0;
     this.health = null;
+    this.oldHealth = null;
     this.items = null;
     this.level = null;
     this.ship = null;
@@ -438,6 +439,8 @@ class Game {
     this.terrainType = null;
     this.landPosition = [0,0];
     this.otherLandPlayers = [];
+
+    this.damageIndicator = null;
   }
 
   draw() {
@@ -452,6 +455,26 @@ class Game {
       this.drawTerrain();
       this.drawLandPlayer();
       this.drawDashboard();
+      this.checkDamaged();
+    }
+  }
+
+  checkDamaged() {
+    if (this.damageIndicator != null) {
+      var currTime = new Date().getTime();
+      ctx.fillStyle="#ff0000";
+      ctx.globalAlpha=((this.damageIndicator - currTime)/300)*0.8;
+      ctx.fillRect(0, 0, 1000, 800);
+      ctx.globalAlpha=1;
+
+      if (currTime >= this.damageIndicator)
+        this.damageIndicator = null;
+    } else {
+      if (this.oldHealth != this.health) {
+        if (this.damageIndicator == null) {
+          this.damageIndicator = new Date().getTime() + 300;
+        }
+      }
     }
   }
 
@@ -833,6 +856,7 @@ class Connection {
     game.username = data.data.username;
     game.currency = data.data.currency;
     game.direction = data.data.direction;
+    game.oldHealth = game.health;
     game.health = data.data.health;
     game.items = data.data.items;
     game.level = data.data.level;

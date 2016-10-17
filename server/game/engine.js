@@ -21,8 +21,6 @@ class GameEngine {
 
   addPlayer(player) {
     var plyr = new Player(player);
-    player.location = "space";
-    player.landPosition = null;
     this.players.push(plyr);
   }
 
@@ -110,10 +108,14 @@ class GameEngine {
           this.players[i].resetMovement();
         }
       } else if (this.players[i].readyToMove) {
-        var nextMove = this.space.checkTerrainMove(this.players[i].landPosition, this.players[i].terrainMovement, this.players[i].location);
-        this.players[i].landPosition = nextMove;
-        this.players[i].lastMove = new Date().getTime();
-        this.players[i].resetMovement();
+        var currTime = new Date().getTime();
+        // this number if how many milliseconds between moves                         \/
+        if (this.players[i].lastMove == null || currTime > this.players[i].lastMove + 100) {
+          var nextMove = this.space.checkTerrainMove(this.players[i], this.players[i].terrainMovement, this.players[i].location);
+          this.players[i].landPosition = nextMove;
+          this.players[i].lastMove = new Date().getTime();
+          this.players[i].resetMovement();
+        }
       }
     }
   }
