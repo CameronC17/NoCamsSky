@@ -62,8 +62,12 @@ class Player {
   }
 
   inputTerrainMove(data) {
-    this.terrainMovement = data;
-    this.readyToMove = true;
+    console.log(this.readyToMove);
+    if (!this.readyToMove) {
+      this.terrainMovement = data;
+      this.readyToMove = true;
+    }
+
   }
 
   isClose(pos) {

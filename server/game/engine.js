@@ -110,7 +110,7 @@ class GameEngine {
       } else if (this.players[i].readyToMove) {
         var currTime = new Date().getTime();
         // this number if how many milliseconds between moves                         \/
-        if (this.players[i].lastMove == null || currTime > this.players[i].lastMove + 100) {
+        if (this.players[i].lastMove == null || currTime > this.players[i].lastMove + 200) {
           var nextMove = this.space.checkTerrainMove(this.players[i], this.players[i].terrainMovement, this.players[i].location);
           this.players[i].landPosition = nextMove;
           this.players[i].lastMove = new Date().getTime();
