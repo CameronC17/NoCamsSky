@@ -145,9 +145,18 @@ class Space {
     var rtnArray = [];
     for (var i = 0; i < otherPlayers.length; i++) {
       if (otherPlayers[i].position[0] > pos[0] - 12 && otherPlayers[i].position[0] < pos[0] + 12 && otherPlayers[i].position[1] > pos[1] - 12 && otherPlayers[i].position[1] < pos[1] + 12) {
-        otherPlayers[i].position[0] = pos[0] - otherPlayers[i].position[0];
-        otherPlayers[i].position[1] = pos[1] - otherPlayers[i].position[1];
-        rtnArray.push(otherPlayers[i]);
+        var newPos = [];
+        newPos[0] = pos[0] - otherPlayers[i].position[0];
+        newPos[1] = pos[1] - otherPlayers[i].position[1];
+        //console.log(newPos);
+        var nearbyPlayer = {
+          "name" : otherPlayers[i].username,
+          "position" : newPos,
+          "health" : otherPlayers[i].health,
+          "character" : otherPlayers[i].character
+        }
+
+        rtnArray.push(nearbyPlayer);
       }
     }
     return rtnArray;

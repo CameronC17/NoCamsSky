@@ -467,7 +467,20 @@ class Game {
       for (var x = 0; x < row.length; x++) {
         ctx.fillStyle=this.getTileColour(row[x]);
         ctx.fillRect(x * 50, y * 50, 50, 50);
+        //ctx.fillStyle="#fff";
+        //ctx.fillText(row[x], x*50 + 20, y*50 + 30);
       }
+    }
+    this.drawTerrainOtherPlayers();
+  }
+
+  drawTerrainOtherPlayers() {
+    for (var i = 0; i < this.otherLandPlayers.length; i++) {
+      //change this next line to get the correct character picture
+      ctx.fillStyle="#f44242";
+      var newPos = [550 - ((this.otherLandPlayers[i].position[0] + 1) * 50), 450 - ((this.otherLandPlayers[i].position[1] + 1) * 50)];
+      ctx.fillStyle="#f44242";
+      ctx.fillRect(newPos[0] + 7, newPos[1] + 7, 36, 36);
     }
   }
 
@@ -832,9 +845,6 @@ class Connection {
     game.terrainType = data.terrainData[1];
 
     game.otherLandPlayers = data.terrainPlayerData;
-    if (data.terrainPlayerData.length > 0) {
-      console.log(data.terrainPlayerData[0]);
-    }
   }
 
   emit(target, data) {

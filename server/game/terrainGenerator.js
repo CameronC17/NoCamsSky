@@ -55,12 +55,12 @@ class TerrainGenerator {
   }
 
   generateRandomTile() {
-    var tileType = Math.floor(Math.random() * 200) + 0;
-    if (tileType < 180) {
+    var tileType = Math.floor(Math.random() * 500) + 0;
+    if (tileType < 480) {
       return (Math.floor(Math.random() * 6) + 1).toString();
-    } else if (tileType < 198) {
+    } else if (tileType < 498) {
       return "d";
-    } else if (tileType < 200) {
+    } else if (tileType < 501) {
       return "o";
     } else {
       return "d";
