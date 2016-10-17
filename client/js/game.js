@@ -437,6 +437,7 @@ class Game {
     this.terrain = null;
     this.terrainType = null;
     this.landPosition = [0,0];
+    this.otherLandPlayers = [];
   }
 
   draw() {
@@ -829,6 +830,11 @@ class Connection {
     game.landPosition = data.data.landPosition;
     game.terrain = data.terrainData[0];
     game.terrainType = data.terrainData[1];
+
+    game.otherLandPlayers = data.terrainPlayerData;
+    if (data.terrainPlayerData.length > 0) {
+      console.log(data.terrainPlayerData[0]);
+    }
   }
 
   emit(target, data) {

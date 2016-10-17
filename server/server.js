@@ -52,9 +52,11 @@ function dataEmitter() {
         });
       } else {
         var terrainData = gameEngine.getTerrainData(client.username);
+        var terrainPlayerData = gameEngine.getPlayerTerrainData(client.username);
         io.to(client.socket).emit('landserveremit', {
           data: playerData,
-          terrainData : terrainData
+          terrainData : terrainData,
+          terrainPlayerData: terrainPlayerData
         });
       }
     }

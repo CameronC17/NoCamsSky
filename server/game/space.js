@@ -33,19 +33,29 @@ class Space {
     if (terrID > -1) {
       if (data.up)
         newPos[1]--;
-      else if (data.down)
+      if (data.down)
         newPos[1]++;
-      else if (data.left)
+      if (data.left)
         newPos[0]--;
-      else if (data.right)
+      if (data.right)
         newPos[0]++;
       //check for collision or whatever
       var terrain = this.terrain[terrID].terrain;
-      if (terrain[newPos[1]][newPos[0]] == "w" || terrain[newPos[1]][newPos[0]] == "d") {
-        return [oldPosX, oldPosY];
+      // || terrain[newPos[1]][newPos[0]] == "d"
+      if (newPos[1] > 0 && newPos[1] < (this.terrain[terrID].size * 8)) {
+        if (newPos[0] > 0 && newPos[0] < (this.terrain[terrID].size * 8)) {
+          if (terrain[newPos[1]][newPos[0]] == "w") {
+            return [oldPosX, oldPosY];
+          } else {
+            return newPos;
+          }
+        } else {
+          return [oldPosX, newPos[1]];
+        }
       } else {
-        return newPos;
+        return [newPos[0], oldPosY];
       }
+
     }
   }
 
@@ -116,7 +126,7 @@ class Space {
           for (var y = pos[1] - 8; y < pos[1] + 8; y++) {
             var row = [];
             for (var x = pos[0] - 10; x < pos[0] + 10; x++) {
-              if (x < 0 || y < 0 || x > terrain.size * 8 || y > terrain.size * 8)
+              if (x < 0 || y < 0 || x > (terrain.size * 8) - 1 || y > (terrain.size * 8) - 1)
                 row.push("b")
               else {
                 row.push(terrain.terrain[y][x]);
@@ -129,6 +139,18 @@ class Space {
       }
     }
     return null;
+  }
+
+  getPlayerTerrainData(pos, otherPlayers) {
+    var rtnArray = [];
+    for (var i = 0; i < otherPlayers.length; i++) {
+      if (otherPlayers[i].position[0] > pos[0] - 12 && otherPlayers[i].position[0] < pos[0] + 12 && otherPlayers[i].position[1] > pos[1] - 12 && otherPlayers[i].position[1] < pos[1] + 12) {
+        otherPlayers[i].position[0] = pos[0] - otherPlayers[i].position[0];
+        otherPlayers[i].position[1] = pos[1] - otherPlayers[i].position[1];
+        rtnArray.push(otherPlayers[i]);
+      }
+    }
+    return rtnArray;
   }
 
   landPlayerPosition(planetID) {
@@ -147,7 +169,7 @@ class Space {
   }
 
   canLand(playerPos, planet) {
-    if (playerPos[0] > planet.position[0] - planet.size && playerPos[0] < planet.position[0] + planet.size && playerPos[1] > planet.position[1] - planet.size && playerPos[1] < planet.position[1] + planet.size) {
+    if (playerPos[0] > planet.position[0] - planet.size && playerPos[0] < planet.position[0] + planet.size && playerPos[1] > planet.position[1] - (planet.size*2) && playerPos[1] < planet.position[1] + planet.size) {
       return true;
     }
     return false;

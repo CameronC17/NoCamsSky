@@ -58,6 +58,18 @@ class GameEngine {
     return this.space.getTerrainData(player.landPosition, player.location);
   }
 
+  getPlayerTerrainData(name) {
+    var player = this.getPlayer(name);
+    var otherPlayers = [];
+    //get other players on same terrain
+    for (var i = 0; i < this.players.length; i++) {
+      if (this.players[i].location == player.location && this.players[i].username != player.username) {
+        otherPlayers.push({"name" : this.players[i].username, "position" : this.players[i].landPosition, "health" : this.players[i].health, "character" : this.players[i].character });
+      }
+    }
+    return this.space.getPlayerTerrainData(player.landPosition, otherPlayers);
+  }
+
   getNearbyPlanets(name) {
     var player = this.getPlayer(name);
     var rtnArray = [];
@@ -79,7 +91,6 @@ class GameEngine {
 
   run() {
     this.checkMovement();
-
 
     var obj = this;
     if (!this.pause) {
