@@ -41,6 +41,12 @@ var planetArray = [
     "size" : 180,
     "type" : "Ice",
     "position" : [3400, 900]
+  },
+  {
+    "name" : "Jose the 2nd",
+    "size" : 100,
+    "type" : "Fire",
+    "position" : [600, 1400]
   }
 ];
 
