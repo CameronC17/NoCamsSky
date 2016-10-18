@@ -222,7 +222,7 @@ class Space {
       if (xPos < 0 || yPos < 0 || xPos > (planetSize) - 1 || yPos > (planetSize * 8) - 1) {
         console.log("tried to put a player out of bounds");
       } else {
-        if (this.terrain[planetID].terrain[yPos][xPos] != "d") {
+        if (this.terrain[planetID].terrain[yPos][xPos] != "d" && this.terrain[planetID].terrain[yPos][xPos - 1] != "d") {
           suitablePosition[0] = xPos;
           suitablePosition[1] = yPos;
         }

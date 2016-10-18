@@ -28,19 +28,19 @@ var posData = [];
 
 var images = [
   {
-    "name" : "randomcat",
-    "image" : "http://i.imgur.com/LBY8Pvx.jpg",
-    "width" : 171,
-    "height" : 86,
-    "mWidth" : 2052,
-    "mHeight" : 946,
+    "name" : "thruster",
+    "image" : "http://i.imgur.com/xg9cFQ5.png",
+    "width" : 50,
+    "height" : 178,
+    "mWidth" : 200,
+    "mHeight" : 178,
     "timing" : 60,
     "multiline" : true
   }
 ];
 
 var spriter = new Spriter();
-//spriter.loadSprites(images);
+spriter.loadSprites(images);
 
 function mainLoop() {
   clearScreen();
@@ -78,16 +78,6 @@ function checkLoad() {
   ctx.fillText("LOADING", 460, 400);
   //ctx.fillText(loadText, c.width - (ctx.measureText(loadText).width / 2), c.height - (ctx.measureText(loadText).height / 2));
 }
-
-function drawSprites() {
-  for (var i = 0; i < posData.length; i++) {
-    var sprite = spriter.getSprite(posData[i][0]);
-    if (sprite != null) {
-      ctx.drawImage(sprite.image,sprite.x,sprite.y,sprite.width,sprite.height,posData[i][1],posData[i][2],sprite.width,sprite.height);
-    }
-  }
-}
-
 
 //This loops the animation frames for animation!!!!
 var recursiveAnim = function() {
@@ -142,12 +132,14 @@ var Key = {
   onKeydown: function(event) {
     if (event.keycode == '8')
       event.preventDefault();
-    //game.movementListener();
+    spriter.animate("thruster", true);
     this._pressed[event.keyCode] = true;
   },
   onKeyup: function(event) {
-    //game.movementListener();
     delete this._pressed[event.keyCode];
+    //checks to see if any more keys are held down before we cancel the animation
+    if (Object.keys(this._pressed).length == 0)
+      spriter.animate("thruster", false);
   }
 };
 
@@ -622,7 +614,7 @@ class Game {
   }
 
   drawPlayer() {
-    ctx.fillStyle="#23e564";
+    ctx.fillStyle="#6d6d6d";
     ctx.save();
     var x = (c.width/2) - 105,
         y = (c.height / 2) - 35,
@@ -632,9 +624,19 @@ class Game {
 
     ctx.rotate(this.direction * Math.PI / 180);
     ctx.translate(-(x + width / 2), -(y + height / 2));
+
+    //thruster sprite
+    var sprite = spriter.getSprite("thruster");
+    if (sprite != null) {
+      ctx.drawImage(sprite.image,sprite.x,sprite.y,sprite.width,sprite.height,(c.width/2) - 110, (c.height / 2) - 15,(sprite.width)/1.4,(sprite.height)/1.4);
+    }
+    
+    //ship body
     ctx.fillRect((c.width/2) - 105, (c.height / 2) - 35, 25, 50);
-    ctx.fillStyle="#ff0000";
+
+    //peak of ship
     ctx.fillRect((c.width/2) - 108, (c.height / 2) - 40, 31, 6);
+
 
     ctx.restore();
     ctx.font="20px Arial";
