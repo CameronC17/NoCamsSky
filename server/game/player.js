@@ -62,12 +62,13 @@ class Player {
   }
 
   inputTerrainMove(data) {
-    console.log(this.readyToMove);
-    if (!this.readyToMove) {
-      this.terrainMovement = data;
-      this.readyToMove = true;
+    var currTime = new Date().getTime();
+    if (currTime > this.lastMove + 200) {
+      if (!this.readyToMove) {
+        this.terrainMovement = data;
+        this.readyToMove = true;
+      }
     }
-
   }
 
   isClose(pos) {
@@ -91,6 +92,7 @@ class Player {
     }
     this.lastInput = null;
     this.readyToMove = false;
+    this.lastMove = new Date().getTime();
 
   }
 

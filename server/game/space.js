@@ -53,9 +53,6 @@ class Space {
           } else {
             return newPos;
           }
-
-
-
         } else {
           return [oldPosX, newPos[1]];
         }
