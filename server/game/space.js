@@ -20,6 +20,7 @@ class Space {
   }
 
   checkTerrainMove(player, data, terrain) {
+    if (data) {
     var pos = player.landPosition;
     var terrID = -1;
     for (var i = 0; i < this.terrain.length; i++) {
@@ -78,6 +79,7 @@ class Space {
       }
 
     }
+  }
   }
 
   takeOff(player) {

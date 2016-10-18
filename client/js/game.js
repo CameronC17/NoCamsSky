@@ -428,9 +428,11 @@ class Game {
     this.oldHealth = null;
     this.items = null;
     this.level = null;
-    this.ship = null;
+    this.ship = [1,1,1,1,1];
     this.character = null;
     this.xp = null;
+
+    this.playerCount = 0;
 
     this.otherPlayers = [];
     this.planets = [];
@@ -477,7 +479,7 @@ class Game {
       if (currTime >= this.damageIndicator)
         this.damageIndicator = null;
     } else {
-      if (this.oldHealth != this.health) {
+      if (this.oldHealth > this.health) {
         if (this.damageIndicator == null) {
           this.damageIndicator = new Date().getTime() + 300;
         }
@@ -586,11 +588,12 @@ class Game {
   createUpgradeButtons() {
     var rtnArray = [];
 
-
-
     //button for speed upgrade
-    rtnArray.push(new Button("#1123c1", c.width - 190, 400, 140, 50, "SPEED"));
-    rtnArray.push(new Button("#1123c1", c.width - 190, 460, 140, 50, "HEALTH"));
+    rtnArray.push(new Button("#202c99", c.width - 60, 430, 50, 40, ""));
+    rtnArray.push(new Button("#202c99", c.width - 60, 490, 50, 40, ""));
+    rtnArray.push(new Button("#202c99", c.width - 60, 550, 50, 40, ""));
+    rtnArray.push(new Button("#202c99", c.width - 60, 610, 50, 40, ""));
+    rtnArray.push(new Button("#202c99", c.width - 60, 670, 50, 40, ""));
 
     return rtnArray;
   }
@@ -601,6 +604,15 @@ class Game {
     ctx.fillRect(button.x, button.y, button.width, button.height);
     ctx.font="30px Arial";
     ctx.fillStyle="#000";
+    ctx.fillText(button.text, button.x + (button.width/2) - (ctx.measureText(button.text).width / 2), button.y + (button.height/2) + (parseInt(ctx.font) / 3));
+  }
+
+  drawUpgradeButtonsLol(btn) {
+    var button = btn;
+    ctx.fillStyle=button.colour;
+    ctx.fillRect(button.x, button.y, button.width, button.height);
+    ctx.font="20px Arial";
+    ctx.fillStyle="#fff";
     ctx.fillText(button.text, button.x + (button.width/2) - (ctx.measureText(button.text).width / 2), button.y + (button.height/2) + (parseInt(ctx.font) / 3));
   }
 
@@ -784,10 +796,18 @@ class Game {
     ctx.font="18px Arial";
     ctx.fillText("Name: " + this.username, c.width - 190, 30);
     ctx.fillText("Level: " + this.level, c.width - 190, 52);
-    ctx.fillText("Health: " + this.health, c.width - 190, 74);
-    ctx.fillText("Edds: " + this.currency, c.width - 190, 96);
-    ctx.fillText("Position: " + this.position, c.width - 190, 118);
-    ctx.fillText("Players: " + parseInt(this.otherPlayers.length + 1), c.width - 190, 140);
+    ctx.fillText("Edds: " + this.currency, c.width - 190, 74);
+    ctx.fillText("Position: " + this.position, c.width - 190, 96);
+    ctx.fillText("Players: " + this.playerCount, c.width - 190, 118);
+
+    //hp indicator
+    ctx.fillStyle="#e87a7a";
+    ctx.fillRect(c.width - 185, 136, 165, 20);
+    ctx.fillStyle="#ff0f0f";
+    ctx.fillRect(c.width - 185, 136, (this.health / 100)*165, 20);
+    var hpText = "HP: " + this.health + "/" + 100;
+    ctx.fillStyle="#fff";
+    ctx.fillText(hpText, c.width - 180, 153);
 
     var xpTarget = this.getXPBasedOnLevel(this.level);
     //xp indicator
@@ -828,11 +848,62 @@ class Game {
     ctx.fillStyle="#fff";
     ctx.font="22px Arial";
     ctx.fillText("SHIP UPGRADES", c.width-190, 375);
+    ctx.font="20px Arial";
+    ctx.fillText("Lvl", c.width - 100, 410);
+    ctx.fillText("Buy", c.width - 62, 410);
+    ctx.fillText("Type", c.width - 180, 410);
+    ctx.fillRect(c.width - 170, 422, 140, 1);
+
+    //type name
+    ctx.fillText("Thrusters", c.width - 192, 455);
+    ctx.fillText("Shields", c.width - 192, 515);
+    ctx.fillText("Dunno", c.width - 192, 575);
+    ctx.fillText("Dunno", c.width - 192, 635);
+    ctx.fillText("Health ++", c.width - 192, 695);
+    //current level
+    ctx.fillText(this.ship[0], c.width - 85, 455);
+    ctx.fillText(this.ship[1], c.width - 85, 515);
+    ctx.fillText(this.ship[2], c.width - 85, 575);
+    ctx.fillText(this.ship[3], c.width - 85, 635);
+
     ctx.fillStyle="#252526";
     ctx.fillRect(c.width-180, 384, 160, 2);
 
     for (var i = 0; i < this.upgradeButtons.length; i++) {
-      this.drawButton(this.upgradeButtons[i]);
+      this.drawUpgradeButtonsLol(this.upgradeButtons[i]);
+    }
+
+    //costs
+    var yPos = 456;
+    for (var i = 0; i < this.ship.length; i++) {
+      var cost = this.getCostOfUpgrade(this.ship[i]);
+      if (this.currency - cost < 0)
+        ctx.fillStyle="#ff0f0f";
+      else
+        ctx.fillStyle="#3bff0f";
+
+      ctx.fillText(cost, c.width - 58, yPos);
+      yPos += 60;
+    }
+  }
+
+  getCostOfUpgrade(lvl) {
+    switch (lvl) {
+      case 1:
+        return 600;
+        break;
+      case 2:
+        return 1200;
+        break;
+      case 3:
+        return 2000;
+        break;
+      case 4:
+        return 5000;
+        break;
+      default:
+        return "Full";
+        break;
     }
   }
 
@@ -851,7 +922,11 @@ class Game {
     }
 
     //check here for the ship ugrade buttons
-
+    for (var i = 0; i < this.upgradeButtons.length; i++) {
+      if (this.upgradeButtons[i].isInside(pos)) {
+        connection.emit('shipupgrade', i);
+      }
+    }
   }
 
   getXPBasedOnLevel(level) {
@@ -941,6 +1016,7 @@ class Connection {
     game.ship = data.data.ship;
     game.character = data.data.character;
     game.xp = data.data.xp;
+    game.playerCount = data.playerCount;
 
     game.otherPlayers = data.otherPlayerData;
     game.planets = data.planetData;
@@ -963,6 +1039,7 @@ class Connection {
     game.ship = data.data.ship;
     game.character = data.data.character;
     game.xp = data.data.xp;
+    game.playerCount = data.playerCount;
 
     if (game.landPosition[0] == -1 && game.landPosition[1] == -1) {
       game.landAnimation = 400;
@@ -999,6 +1076,12 @@ class Button {
     this.width = width;
     this.height = height;
     this.text = text;
+  }
+
+  isInside(click) {
+    if (click.x > this.x && click.x < this.x + this.width && click.y > this.y && click.y < this.y + this.height)
+      return true;
+    return false;
   }
 }
 

@@ -47,6 +47,7 @@ function dataEmitter() {
         var planets = gameEngine.getNearbyPlanets(client.username);
         io.to(client.socket).emit('serverupdate', {
           data: playerData,
+          playerCount : gameEngine.players.length,
           otherPlayerData : otherPlayers,
           planetData : planets
         });
@@ -56,6 +57,7 @@ function dataEmitter() {
         var shipData = gameEngine.getShipData(client.username);
         io.to(client.socket).emit('landserveremit', {
           data: playerData,
+          playerCount : gameEngine.players.length,
           terrainData : terrainData,
           terrainPlayerData : terrainPlayerData,
           shipData : shipData
@@ -87,6 +89,7 @@ function onConnect(socket) {
   socket.on('keypress', keypress);
   socket.on('landAttempt', landAttempt);
   socket.on('takeOff', takeOff);
+  socket.on('shipupgrade', shipUpgrade);
 };
 
 function onDisconnect() {
@@ -154,4 +157,10 @@ function keypress(data) {
   } else {
     console.log("Failed to find player\n\n");
   }
+}
+
+function shipUpgrade(data) {
+  var userPosition = connected.map(function(e) { return e.socket; }).indexOf(this.id);
+  //console.log("Player " + connected[userPosition].username + " wants to upgrade part " + data);
+  gameEngine.upgradeShip(connected[userPosition].username, data);
 }

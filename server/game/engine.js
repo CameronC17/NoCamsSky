@@ -111,11 +111,48 @@ class GameEngine {
     }
   }
 
+  upgradeShip(name, shipPart) {
+    var player = this.getPlayer(name);
+    //console.log("It will cost " + this.getUpgradeCost(player.ship[shipPart]) + " Edds");
+    var cost = this.getUpgradeCost(player.ship[shipPart]);
+    if (player.currency >= cost) {
+      player.currency -= cost;
+      if (shipPart < 4) {
+        player.ship[shipPart]++;
+      } else if (shipPart == 4){
+        if (player.health + 50 > 100)
+          player.health = 100;
+        else
+          player.health += 50;
+      }
+    }
+  }
+
+  getUpgradeCost(lvl) {
+    switch (lvl) {
+      case 1:
+        return 600;
+        break;
+      case 2:
+        return 1200;
+        break;
+      case 3:
+        return 2000;
+        break;
+      case 4:
+        return 5000;
+        break;
+      default:
+        return 9999999999999999999999;
+        break;
+    }
+  }
+
   checkMovement() {
     for (var i = 0; i < this.players.length; i++) {
       if (this.players[i].landPosition == null) {
         if (this.players[i].readyToMove) {
-          var nextMove = this.space.checkMove(this.players[i].position, 1, this.players[i].direction);
+          var nextMove = this.space.checkMove(this.players[i].position, this.players[i].ship[0], this.players[i].direction);
           this.players[i].position = nextMove;
           this.players[i].resetMovement();
         }
