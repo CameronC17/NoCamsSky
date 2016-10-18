@@ -9,6 +9,7 @@ class Player {
     this.username = data.username;
     this.level = data.level;
     this.xp = data.xp;
+    //ship = [speed, health, dunno, dunno, dunno]
     this.ship = data.ship;
     this.items = data.items;
     this.character = data.character;

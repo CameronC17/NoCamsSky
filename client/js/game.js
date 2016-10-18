@@ -414,9 +414,9 @@ class Screen {
 class Game {
   constructor() {
     this.stars = this.createStars(5000);
-    this.buttons = this.createButtons();
     this.landButton = new Button("#ffee00", c.width - 190, 290, 175, 30, "LAND");
     this.takeOffButton = new Button("#ffee00", c.width - 186, 290, 175, 30, "TAKE OFF");
+    this.upgradeButtons = this.createUpgradeButtons();
 
     this.connected = 1;
 
@@ -583,9 +583,15 @@ class Game {
     }
   }
 
-  createButtons() {
+  createUpgradeButtons() {
     var rtnArray = [];
-    //land on planet button
+
+
+
+    //button for speed upgrade
+    rtnArray.push(new Button("#1123c1", c.width - 190, 400, 140, 50, "SPEED"));
+    rtnArray.push(new Button("#1123c1", c.width - 190, 460, 140, 50, "HEALTH"));
+
     return rtnArray;
   }
 
@@ -732,6 +738,7 @@ class Game {
       this.drawPlanetDashboardData();
     else
       this.drawShipData();
+    this.drawUpgradeButtons();
   }
 
   drawShipData() {
@@ -817,6 +824,18 @@ class Game {
     }
   }
 
+  drawUpgradeButtons() {
+    ctx.fillStyle="#fff";
+    ctx.font="22px Arial";
+    ctx.fillText("SHIP UPGRADES", c.width-190, 375);
+    ctx.fillStyle="#252526";
+    ctx.fillRect(c.width-180, 384, 160, 2);
+
+    for (var i = 0; i < this.upgradeButtons.length; i++) {
+      this.drawButton(this.upgradeButtons[i]);
+    }
+  }
+
   checkMouseClick(pos) {
     //first check land button
     if (this.landPosition[0] == -1 && this.landPosition[1] == -1) {
@@ -830,6 +849,8 @@ class Game {
         connection.emit('takeOff');
       }
     }
+
+    //check here for the ship ugrade buttons
 
   }
 
