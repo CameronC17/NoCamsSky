@@ -78,22 +78,35 @@ class Player {
   }
 
   resetMovement(){
-    this.movement = {
-      "up": false,
-      "down": false,
-      "left": false,
-      "right": false
-    };
-    this.terrainMovement = {
-      "up": false,
-      "down": false,
-      "left": false,
-      "right": false
-    }
-    this.lastInput = null;
-    this.readyToMove = false;
-    this.lastMove = new Date().getTime();
+    if (this.location == "space") {
+      var currTime = new Date().getTime();
+      if (currTime >= this.lastInput + 100) {
+        this.movement = {
+          "up": false,
+          "down": false,
+          "left": false,
+          "right": false
+        }
 
+        this.lastInput = null;
+        this.readyToMove = false;
+      }
+    } else {
+      this.movement = {
+        "up": false,
+        "down": false,
+        "left": false,
+        "right": false
+      }
+      this.terrainMovement = {
+        "up": false,
+        "down": false,
+        "left": false,
+        "right": false
+      }
+      this.readyToMove = false;
+      this.lastMove = new Date().getTime();
+    }
   }
 
 }
