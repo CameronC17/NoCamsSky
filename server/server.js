@@ -53,10 +53,12 @@ function dataEmitter() {
       } else {
         var terrainData = gameEngine.getTerrainData(client.username);
         var terrainPlayerData = gameEngine.getPlayerTerrainData(client.username);
+        var shipData = gameEngine.getShipData(client.username);
         io.to(client.socket).emit('landserveremit', {
           data: playerData,
           terrainData : terrainData,
-          terrainPlayerData: terrainPlayerData
+          terrainPlayerData : terrainPlayerData,
+          shipData : shipData
         });
       }
     }
@@ -84,6 +86,7 @@ function onConnect(socket) {
   socket.on('login', login);
   socket.on('keypress', keypress);
   socket.on('landAttempt', landAttempt);
+  socket.on('takeOff', takeOff);
 };
 
 function onDisconnect() {
@@ -126,6 +129,15 @@ function landAttempt(data) {
   if (userPosition > -1) {
     if (connected[userPosition].username != null) {
       gameEngine.landAttempt(connected[userPosition].username, data);
+    }
+  }
+}
+
+function takeOff() {
+  var userPosition = connected.map(function(e) { return e.socket; }).indexOf(this.id);
+  if (userPosition > -1) {
+    if (connected[userPosition].username != null) {
+      gameEngine.takeOff(connected[userPosition].username);
     }
   }
 }

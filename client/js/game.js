@@ -416,6 +416,7 @@ class Game {
     this.stars = this.createStars(5000);
     this.buttons = this.createButtons();
     this.landButton = new Button("#ffee00", c.width - 190, 290, 175, 30, "LAND");
+    this.takeOffButton = new Button("#ffee00", c.width - 186, 290, 175, 30, "TAKE OFF");
 
     this.connected = 1;
 
@@ -437,8 +438,11 @@ class Game {
 
     this.terrain = null;
     this.terrainType = null;
-    this.landPosition = [0,0];
+    this.landPosition = [-1,-1];
+    this.landAnimation = 0;
+    this.lastLandAnimation = new Date().getTime();
     this.otherLandPlayers = [];
+    this.shipData = [];
 
     this.damageIndicator = null;
   }
@@ -453,6 +457,7 @@ class Game {
       this.drawDashboard();
     } else {
       this.drawTerrain();
+      this.drawShips();
       this.drawLandPlayer();
       this.drawDashboard();
       this.checkDamaged();
@@ -474,6 +479,31 @@ class Game {
         if (this.damageIndicator == null) {
           this.damageIndicator = new Date().getTime() + 300;
         }
+      }
+    }
+  }
+
+  drawShips() {
+    //ship animation bit
+    if (this.landAnimation > 0) {
+      var currTime = new Date().getTime();
+      if (currTime >= this.lastLandAnimation + 2) {
+        this.landAnimation -= 6;
+        this.lastLandAnimation = currTime;
+      }
+    } else {
+      this.landAnimation = 0;
+    }
+
+    //actually drawing the ship
+    for (var i = 0; i < this.shipData.length; i++) {
+      var playerYPos = Math.floor(this.terrain.length / 2) * 50 + 7;
+      var playerXPos = Math.floor(this.terrain[0].length / 2) * 50 + 7;
+      var xPos = this.shipData[i][1][0] - this.landPosition[0];
+      var yPos = this.shipData[i][1][1] - this.landPosition[1];
+      if (xPos > - 12 && xPos < 12 && yPos > -12 && yPos < 12) {
+        ctx.fillStyle="#fff";
+        ctx.fillRect(playerXPos + (xPos * 50), playerYPos + (yPos * 50) - this.landAnimation, 36, 36);
       }
     }
   }
@@ -508,10 +538,12 @@ class Game {
   }
 
   drawLandPlayer() {
-    ctx.fillStyle="#a0099e";
-    var yPos = Math.floor(this.terrain.length / 2);
-    var xPos = Math.floor(this.terrain[0].length / 2);
-    ctx.fillRect(xPos * 50 + 7, yPos * 50 + 7, 36, 36);
+    if (this.landAnimation <= 0) {
+      ctx.fillStyle="#a0099e";
+      var yPos = Math.floor(this.terrain.length / 2);
+      var xPos = Math.floor(this.terrain[0].length / 2);
+      ctx.fillRect(xPos * 50 + 7, yPos * 50 + 7, 36, 36);
+    }
   }
 
   getTileColour(val) {
@@ -694,7 +726,40 @@ class Game {
   drawDashboard() {
     this.drawDashboardBackground();
     this.drawDashboardData();
-    this.drawPlanetDashboardData();
+    if (this.landPosition[0] == -1 && this.landPosition[1] == -1)
+      this.drawPlanetDashboardData();
+    else
+      this.drawShipData();
+  }
+
+  drawShipData() {
+    ctx.font="28px Arial";
+    ctx.fillStyle="#fff";
+    ctx.fillText("Ship Location", c.width - 180, 260);
+    var xPos, yPos;
+    for (var i = 0; i < this.shipData.length; i++) {
+      if (this.shipData[i][0] == this.username) {
+        xPos = this.shipData[i][1][0] - this.landPosition[0];
+        yPos = this.shipData[i][1][1] - this.landPosition[1];
+      }
+    }
+    var compassText = "";
+    if (yPos > 0) {
+      compassText += "S";
+    } else if (yPos < 0) {
+      compassText += "N";
+    }
+    if (xPos > 0) {
+      compassText += "E";
+    } else if (xPos < 0) {
+      compassText += "W";
+    }
+    ctx.fillText(compassText, c.width - 125, 290);
+
+    if (compassText == "") {
+      this.drawButton(this.takeOffButton);
+    }
+
   }
 
   drawDashboardBackground() {
@@ -752,10 +817,18 @@ class Game {
 
   checkMouseClick(pos) {
     //first check land button
-    var landBtn = this.landButton;
-    if (pos.x > landBtn.x && pos.x < landBtn.x + landBtn.width & pos.y > landBtn.y && pos.y < landBtn.y + landBtn.height && this.nearbyPlanet != null && this.terrain == null) {
-      connection.emit('landAttempt', this.nearbyPlanet);
+    if (this.landPosition[0] == -1 && this.landPosition[1] == -1) {
+      var landBtn = this.landButton;
+      if (pos.x > landBtn.x && pos.x < landBtn.x + landBtn.width & pos.y > landBtn.y && pos.y < landBtn.y + landBtn.height && this.nearbyPlanet != null && this.terrain == null) {
+        connection.emit('landAttempt', this.nearbyPlanet);
+      }
+    } else {
+      var takeOffButton = this.takeOffButton;
+      if (pos.x > takeOffButton.x && pos.x < takeOffButton.x + takeOffButton.width & pos.y > takeOffButton.y && pos.y < takeOffButton.y + takeOffButton.height) {
+        connection.emit('takeOff');
+      }
     }
+
   }
 
   getXPBasedOnLevel(level) {
@@ -824,7 +897,7 @@ class Connection {
 
   loginConfirm(data) {
     if (!data.data) {
-      console.log("Wrong username or password");
+      window.alert("Wrong username or password");
     } else {
       screen.txtBoxUsername.style.display = "none";
       screen.txtBoxPassword.style.display = "none";
@@ -849,6 +922,10 @@ class Connection {
     game.otherPlayers = data.otherPlayerData;
     game.planets = data.planetData;
 
+    game.landPosition = [-1,-1];
+    game.terrain = null;
+    game.terrainType = null;
+
   }
 
   landServerEmit(data) {
@@ -864,9 +941,14 @@ class Connection {
     game.character = data.data.character;
     game.xp = data.data.xp;
 
+    if (game.landPosition[0] == -1 && game.landPosition[1] == -1) {
+      game.landAnimation = 400;
+    }
+
     game.landPosition = data.data.landPosition;
     game.terrain = data.terrainData[0];
     game.terrainType = data.terrainData[1];
+    game.shipData = data.shipData;
 
     game.otherLandPlayers = data.terrainPlayerData;
   }

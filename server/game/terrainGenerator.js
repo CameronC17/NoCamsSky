@@ -28,7 +28,8 @@ class TerrainGenerator {
       "name" : planet.name,
       "size" : planet.size,
       "type" : planet.type,
-      "terrain" : []
+      "terrain" : [],
+      "ships" : []
     }
 
     terrain.terrain = this.createTerrain(terrain.size, terrain.type);

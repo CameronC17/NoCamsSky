@@ -34,6 +34,8 @@ class GameEngine {
   }
 
   removePlayer(name) {
+    var location = this.getPlayer(name).location;
+    this.space.removePlayer(name, location);
     this.players.splice(this.players.map(function(e) { return e.username; }).indexOf(name), 1);
   }
 
@@ -85,6 +87,16 @@ class GameEngine {
   landAttempt(name, planet) {
     var player = this.getPlayer(name);
     this.space.landAttempt(player, planet);
+  }
+
+  takeOff(name) {
+    var player = this.getPlayer(name);
+    this.space.takeOff(player);
+  }
+
+  getShipData(name) {
+    var player = this.getPlayer(name);
+    return this.space.getShips(player);
   }
 
   run() {

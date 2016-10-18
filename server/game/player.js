@@ -63,7 +63,7 @@ class Player {
 
   inputTerrainMove(data) {
     var currTime = new Date().getTime();
-    if (currTime > this.lastMove + 200) {
+    if (currTime > this.lastMove + 150) {
       if (!this.readyToMove) {
         this.terrainMovement = data;
         this.readyToMove = true;

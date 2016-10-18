@@ -45,13 +45,30 @@ class Space {
       // || terrain[newPos[1]][newPos[0]] == "d"
       if (newPos[1] > 0 && newPos[1] < (this.terrain[terrID].size * 8)) {
         if (newPos[0] > 0 && newPos[0] < (this.terrain[terrID].size * 8)) {
-          if (terrain[newPos[1]][newPos[0]] == "w") {
-            return [oldPosX, oldPosY];
-          } else if(terrain[newPos[1]][newPos[0]] == "d") {
-            player.health -= 5;
-            return [oldPosX, oldPosY];
-          } else {
-            return newPos;
+          // if (terrain[newPos[1]][newPos[0] == "w") {
+          //   return [oldPosX, oldPosY];
+          // } else if(terrain[newPos[1]][newPos[0]] == "d") {
+          //   player.health -= 5;
+          //   return [oldPosX, oldPosY];
+          // } else {
+          //   return newPos;
+          // }
+          switch (terrain[newPos[1]][newPos[0]]) {
+            case "w":
+              return [oldPosX, oldPosY];
+              break;
+            case "d":
+              player.health -= 5;
+              return [oldPosX, oldPosY];
+              break;
+            case "o":
+              player.currency += (Math.floor(Math.random() * 250) + 40);
+              terrain[newPos[1]][newPos[0]] = (Math.floor(Math.random() * 6) + 1).toString();
+              return newPos;
+              break;
+            default:
+              return newPos;
+              break;
           }
         } else {
           return [oldPosX, newPos[1]];
@@ -60,6 +77,25 @@ class Space {
         return [newPos[0], oldPosY];
       }
 
+    }
+  }
+
+  takeOff(player) {
+    this.removePlayer(player.location);
+
+    player.location = "space";
+    player.landPosition = null;
+  }
+
+  removePlayer(name,planet) {
+    var planetID = this.planets.map(function(e) { return e.name; }).indexOf(planet);
+    if (planetID > -1) {
+      var playerIndex = -1;
+      for (var i = 0; i < this.terrain[planetID].ships.length; i++) {
+        if (this.terrain[planetID].ships[i][0] == name)
+          playerIndex = i;
+      }
+      this.terrain[planetID].ships.splice(playerIndex, 1);
     }
   }
 
@@ -111,14 +147,22 @@ class Space {
         //get the terrian based on planetID
         if (this.terrain[planetID] != null) {
           player.landPosition = this.landPlayerPosition(planetID);
+          this.terrain[planetID].ships.push([player.username, [player.landPosition[0]-1, player.landPosition[1]]]);
           player.location = planet.name;
         } else {
           this.terrain[planetID] = this.terrainGenerator.new(planet);
           player.landPosition = this.landPlayerPosition(planetID);
+          this.terrain[planetID].ships.push([player.username, [player.landPosition[0]-1, player.landPosition[1]]]);
           player.location = planet.name;
         }
       }
     }
+  }
+
+  getShips(player) {
+    var rtnArray = [];
+    var planetID = this.planets.map(function(e) { return e.name; }).indexOf(player.location);
+    return this.terrain[planetID].ships;
   }
 
   getTerrainData(pos, location) {
