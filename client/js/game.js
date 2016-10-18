@@ -441,6 +441,8 @@ class Game {
     this.landPosition = [-1,-1];
     this.landAnimation = 0;
     this.lastLandAnimation = new Date().getTime();
+    this.takeOffAnimation = -1;
+    this.lastTakeOffAnimation = new Date().getTime();
     this.otherLandPlayers = [];
     this.shipData = [];
 
@@ -484,7 +486,7 @@ class Game {
   }
 
   drawShips() {
-    //ship animation bit
+    //ship animation bit landing
     if (this.landAnimation > 0) {
       var currTime = new Date().getTime();
       if (currTime >= this.lastLandAnimation + 2) {
@@ -538,7 +540,7 @@ class Game {
   }
 
   drawLandPlayer() {
-    if (this.landAnimation <= 0) {
+    if (this.landAnimation <= 0 && this.takeOffAnimation <= 0) {
       ctx.fillStyle="#a0099e";
       var yPos = Math.floor(this.terrain.length / 2);
       var xPos = Math.floor(this.terrain[0].length / 2);
