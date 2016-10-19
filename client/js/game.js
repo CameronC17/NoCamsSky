@@ -1054,7 +1054,7 @@ class Connection {
 
   loginConfirm(data) {
     if (!data.data) {
-      window.alert("Wrong username or password");
+      window.alert("Wrong username or password, or you are already logged in.");
     } else {
       screen.txtBoxUsername.style.display = "none";
       screen.txtBoxPassword.style.display = "none";

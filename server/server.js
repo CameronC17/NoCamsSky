@@ -117,14 +117,27 @@ function login(data) {
 
 function loginCallback(data, id) {
   if (data.username != undefined) {
-    var userPosition = connected.map(function(e) { return e.socket; }).indexOf(id);
-    if (userPosition > -1) {
-      connected[userPosition].username = data.username;
-      gameEngine.addPlayer(data);
-      util.log("User logged in: " + data.username + "\n\n");
+    //checks if already logged in
+    if (!checkAlreadyLoggedIn(data.username)) {
+      var userPosition = connected.map(function(e) { return e.socket; }).indexOf(id);
+      if (userPosition > -1) {
+        connected[userPosition].username = data.username;
+        gameEngine.addPlayer(data);
+        util.log("User logged in: " + data.username + "\n\n");
+      }
+    } else {
+      data = false;
     }
   }
   io.to(id).emit('loginconfirm', {data: data});
+}
+
+function checkAlreadyLoggedIn(username) {
+  for (var i = 0; i < connected.length; i++) {
+    if (username == connected[i].username)
+      return true;
+  }
+  return false;
 }
 
 function landAttempt(data) {
