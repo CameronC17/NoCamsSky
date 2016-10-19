@@ -24,12 +24,10 @@ console.log('\n\n----------------------\nServer started.\nListening on PORT: ' +
 var dbController = new DBController(mongoose);
 console.log('Starting game engine...');
 var gameEngine = new GameEngine(dbController);
-//dbController.newUser();
 //connect to the db
-dbController.connect('mongodb://localhost/nocamssky');
+//dbController.connect('mongodb://localhost/nocamssky');
+dbController.connect('mongodb://cameronc:PASSWORD@ds027328.mlab.com:27328/nocamssky');
 console.log('Database connection: Successful.');
-//get the planets from the database
-//dbController.getPlanets(gameEngine.setPlanets);
 
 console.log('Game engine started.' + "\n----------------------\n\n");
 dataEmitter();
