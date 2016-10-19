@@ -120,10 +120,7 @@ class GameEngine {
       if (shipPart < 4) {
         player.ship[shipPart]++;
       } else if (shipPart == 4){
-        if (player.health + 50 > 100)
-          player.health = 100;
-        else
-          player.health += 50;
+        player.alterHealth(50);
       }
     }
   }
@@ -154,6 +151,7 @@ class GameEngine {
         if (this.players[i].readyToMove) {
           var nextMove = this.space.checkMove(this.players[i].position, this.players[i].ship[0], this.players[i].direction);
           this.players[i].position = nextMove;
+          this.xpChance(this.players[i]);
           this.players[i].resetMovement();
         }
       } else if (this.players[i].readyToMove) {
@@ -163,6 +161,16 @@ class GameEngine {
       }
     }
   }
+
+  xpChance(player) {
+    var chance = (Math.floor(Math.random() * 100) + 1);
+    if (chance < 3) {
+      player.addXP(Math.floor(Math.random() * 10) + 1)
+    }
+  }
+
+
+
 }
 
 

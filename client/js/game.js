@@ -625,7 +625,7 @@ class Game {
         width = 25,
         height = 40;
 
-    this.drawShip(x, y, width, height, this.direction, "#fff", this.ship, "name");
+    this.drawShip(x, y, width, height, this.direction, "#fff", this.ship, "");
   }
 
   drawShip(x, y, width, height, rot, colour, ship, username) {

@@ -59,11 +59,12 @@ class Space {
               return [oldPosX, oldPosY];
               break;
             case "d":
-              player.health -= 5;
+              player.alterHealth(-5);
               return [oldPosX, oldPosY];
               break;
             case "o":
               player.currency += (Math.floor(Math.random() * 250) + 40);
+              player.addXP(30);
               terrain[newPos[1]][newPos[0]] = (Math.floor(Math.random() * 6) + 1).toString();
               return newPos;
               break;

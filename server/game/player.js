@@ -78,6 +78,49 @@ class Player {
     return false;
   }
 
+  addXP(xp) {
+    this.xp += xp;
+    if (this.xp > this.checkLevelUp()) {
+      this.currency += 100;
+      this.xp = 0;
+      this.level++;
+    }
+  }
+
+  alterHealth(health) {
+    this.health += health;
+    if (this.health > 100)
+      this.health = 100;
+    else if (this.health < 1) {
+      this.xp = 0;
+      this.level--;
+      this.health = 100;
+    }
+  }
+
+  checkLevelUp() {
+    switch (this.level) {
+      case 1:
+        return 50;
+        break;
+      case 2:
+        return 80;
+        break;
+      case 3:
+        return 130;
+        break;
+      case 4:
+        return 200;
+        break;
+      case 5:
+        return 300;
+        break;
+      default:
+        return 10000;
+        break;
+    }
+  }
+
   resetMovement(){
     if (this.location == "space") {
       var currTime = new Date().getTime();
