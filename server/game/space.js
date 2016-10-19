@@ -84,7 +84,7 @@ class Space {
   }
 
   takeOff(player) {
-    this.removePlayer(player.location);
+    this.removePlayer(player.username, player.location);
 
     player.location = "space";
     player.landPosition = null;
@@ -92,12 +92,15 @@ class Space {
 
   removePlayer(name,planet) {
     var planetID = this.planets.map(function(e) { return e.name; }).indexOf(planet);
+    console.log(planet);
     if (planetID > -1) {
       var playerIndex = -1;
       for (var i = 0; i < this.terrain[planetID].ships.length; i++) {
-        if (this.terrain[planetID].ships[i][0] == name)
+        if (this.terrain[planetID].ships[i][0] == name) {
           playerIndex = i;
+        }
       }
+      if (playerIndex > -1)
       this.terrain[planetID].ships.splice(playerIndex, 1);
     }
   }
@@ -252,7 +255,22 @@ class Space {
   }
 
   getPlanets() {
-    return this.planets;
+    var rtnArray = [];
+    for (var i = 0; i < this.planets.length; i++) {
+      var playerCount = 0;
+      if (this.terrain[i] != null) {
+        playerCount = this.terrain[i].ships.length;
+      }
+      var planet = {
+        name : this.planets[i].name,
+        size : this.planets[i].size,
+        type : this.planets[i].type,
+        position : this.planets[i].position,
+        population: playerCount
+      }
+      rtnArray.push(planet);
+    }
+    return rtnArray;
   }
 
 

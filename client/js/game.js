@@ -72,6 +72,8 @@ function checkLoad() {
   ctx.fillStyle="#ff0000";
   if (spriter.checkLoaded()) {
     loaded = true;
+    spriter.duplicateSprite("thruster", "otherThruster");
+    spriter.animate("otherThruster", true);
     screen = new Screen(connection);
   }
   //var loadText = "LOADING";
@@ -118,15 +120,6 @@ var Key = {
   UP: 87,
   RIGHT: 68,
   DOWN: 83,
-  /*FLEFT: 37,
-  FUP: 38,
-  FRIGHT: 39,
-  FDOWN: 40,
-  DHEAD: 49,
-  DWEAP: 50,
-  DLGHT: 51,
-  DCHST: 52,
-  DBOOT: 53,*/
   isDown: function(keyCode) {
     return this._pressed[keyCode];
   },
@@ -285,6 +278,7 @@ class Screen {
     if (click.x >= this.resetButton.x && click.x <= this.resetButton.x + this.resetButton.width && click.y >= this.resetButton.y && click.y <= this.resetButton.y + this.resetButton.height) {
       this.txtBoxUsername.style.display = "none";
       this.txtBoxPassword.style.display = "none";
+      this.colourPicker.style.display = "none";
       this.txtBoxUsername.value = "";
       this.txtBoxPassword.value = "";
       this.screenPosition = 1;
@@ -435,6 +429,8 @@ class Game {
     this.playerCount = 0;
 
     this.otherPlayers = [];
+    this.otherThrusterSprites = [];
+    this.thrustCount = 1;
     this.planets = [];
     this.nearbyPlanet = null;
 
@@ -632,10 +628,10 @@ class Game {
         width = 25,
         height = 40;
 
-    this.drawShip(x, y, width, height, this.direction, this.colour, this.ship, "");
+    this.drawShip(x, y, width, height, this.direction, this.colour, this.ship, "", "thruster");
   }
 
-  drawShip(x, y, width, height, rot, colour, ship, username) {
+  drawShip(x, y, width, height, rot, colour, ship, username, sprite) {
     ctx.fillStyle=colour;
     ctx.strokeStyle="#000";
     ctx.save();
@@ -655,7 +651,7 @@ class Game {
     }
 
     //thruster sprite
-    var sprite = spriter.getSprite("thruster");
+    var sprite = spriter.getSprite(sprite);
     if (sprite != null) {
       ctx.drawImage(sprite.image,sprite.x,sprite.y,sprite.width,sprite.height,thrusterX, y + 5,(sprite.width)/thrusterSize,(sprite.height)/thrusterSize);
     }
@@ -725,7 +721,7 @@ class Game {
           width = 25,
           height = 50;
 
-      this.drawShip(x, y, width, height, otherPlayer.direction, otherPlayer.colour, otherPlayer.ship, otherPlayer.username);
+      this.drawShip(x, y, width, height, otherPlayer.direction, otherPlayer.colour, otherPlayer.ship, otherPlayer.username, "otherThruster");
 
     }
   }
@@ -780,6 +776,7 @@ class Game {
       ctx.fillText(planet.name, textPosX, pos[1] - radius/3);
       ctx.fillText(radius + "k km sq", textPosX, (pos[1] - radius/3) + 30);
       ctx.fillText(planet.type, textPosX, (pos[1] - radius/3) + 60);
+      ctx.fillText("Players: " + planet.population, textPosX, (pos[1] - radius/3) + 90);
 
       //actual planet
       ctx.beginPath();
@@ -1075,10 +1072,12 @@ class Connection {
     game.ship = data.data.ship;
     game.character = data.data.character;
     game.xp = data.data.xp;
-    game.playerCount = data.playerCount;
     game.colour = data.data.colour;
 
+    game.playerCount = data.playerCount;
+
     game.otherPlayers = data.otherPlayerData;
+
     game.planets = data.planetData;
 
     game.landPosition = [-1,-1];
