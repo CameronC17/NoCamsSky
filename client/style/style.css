@@ -20,3 +20,11 @@ input {
   left: 300px;
   display: none;
 }
+
+#colourpicker {
+  position: absolute;
+  z-index: 1;
+  top: 560px;
+  left: 300px;
+  display: none;
+}

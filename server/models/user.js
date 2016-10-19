@@ -1,7 +1,7 @@
 var mongoose = require('mongoose');
 
 var UserSchema = new mongoose.Schema({
-  username : { type: String, required: true },
+  username : { type: String, unique : true, required: true, dropDups: true},
   password : { type: String, required: true },
   level : { type: Number, required: true },
   xp : { type: Number, required: true },
@@ -11,7 +11,8 @@ var UserSchema = new mongoose.Schema({
   position : { type: Array, required: true },
   direction : { type: Number, required: true },
   currency : { type: Number, required: true },
-  health : { type: Number, required: true }
+  health : { type: Number, required: true },
+  colour : { type: String, required: true }
 });
 
 module.exports = mongoose.model('User', UserSchema);

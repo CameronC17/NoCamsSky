@@ -157,6 +157,7 @@ class Screen {
     this.createButtons = this.createCreateButtons();
     this.txtBoxUsername = document.getElementById("username");
     this.txtBoxPassword = document.getElementById("password");
+    this.colourPicker = document.getElementById("colourpicker");
     this.connection = connection;
   }
 
@@ -270,7 +271,7 @@ class Screen {
 
   createCreateButtons() {
     var btns = [];
-    btns.push(new Button("#ff6e00", c.width/2 - 250, 520, 500, 100, "REGISTER"));
+    btns.push(new Button("#ff6e00", c.width/2 - 250, 670, 500, 100, "REGISTER"));
     return btns;
   }
 
@@ -342,13 +343,15 @@ class Screen {
             if (this.txtBoxUsername.value != "" && this.txtBoxPassword.value != "") {
               var data = {
                 "username" : this.txtBoxUsername.value,
-                "password" : this.txtBoxPassword.value
+                "password" : this.txtBoxPassword.value,
+                "colour" : this.colourPicker.value
               }
               this.connection.emit('newUser', data);
               this.txtBoxUsername.value = "";
               this.txtBoxPassword.value = "";
               this.txtBoxUsername.style.display = "none";
               this.txtBoxPassword.style.display = "none";
+              this.colourPicker.style.display = "none";
               this.screenPosition = 1;
             }
             break;
@@ -367,6 +370,8 @@ class Screen {
     ctx.font="30px Arial";
     ctx.fillText("Username", 520, 260);
     ctx.fillText("Password", 520, 400);
+    if (this.screenPosition == 3)
+    ctx.fillText("Colour", 540, 540);
   }
 
   drawLogin() {
@@ -384,6 +389,7 @@ class Screen {
     this.drawStars();
     this.drawTitle();
     this.drawTextInput();
+    this.colourPicker.style.display = "inline-block";
     this.drawHelperText();
     this.drawCreateButtons();
     this.drawResetButton();
@@ -424,6 +430,7 @@ class Game {
     this.ship = [1,1,1,1,1];
     this.character = null;
     this.xp = null;
+    this.colour = "#fff";
 
     this.playerCount = 0;
 
@@ -625,7 +632,7 @@ class Game {
         width = 25,
         height = 40;
 
-    this.drawShip(x, y, width, height, this.direction, "#fff", this.ship, "");
+    this.drawShip(x, y, width, height, this.direction, this.colour, this.ship, "");
   }
 
   drawShip(x, y, width, height, rot, colour, ship, username) {
@@ -641,7 +648,7 @@ class Game {
     var thrusterX = x - 5;
     //checks if ship has bigger thrusters
     if (ship) {
-      if (ship[0] > 3) {
+      if (ship[0] > 2) {
         thrusterSize = 0.8;
         thrusterX = x - 17;
       }
@@ -718,7 +725,7 @@ class Game {
           width = 25,
           height = 50;
 
-      this.drawShip(x, y, width, height, otherPlayer.direction, "#fff", otherPlayer.ship, otherPlayer.username);
+      this.drawShip(x, y, width, height, otherPlayer.direction, otherPlayer.colour, otherPlayer.ship, otherPlayer.username);
 
     }
   }
@@ -1069,6 +1076,7 @@ class Connection {
     game.character = data.data.character;
     game.xp = data.data.xp;
     game.playerCount = data.playerCount;
+    game.colour = data.data.colour;
 
     game.otherPlayers = data.otherPlayerData;
     game.planets = data.planetData;

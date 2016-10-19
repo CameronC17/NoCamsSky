@@ -16,6 +16,7 @@ class Player {
     this.direction = data.direction;
     this.currency = data.currency;
     this.health = data.health;
+    this.colour = data.colour;
     if (data.position[0] != null && data.position[1] != null)
       this.position = data.position;
     else {
