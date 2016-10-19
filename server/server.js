@@ -25,8 +25,8 @@ var dbController = new DBController(mongoose);
 console.log('Starting game engine...');
 var gameEngine = new GameEngine(dbController);
 //connect to the db
-//dbController.connect('mongodb://localhost/nocamssky');
-dbController.connect('mongodb://cameronc:PASSWORD@ds027328.mlab.com:27328/nocamssky');
+dbController.connect('mongodb://localhost/nocamssky');
+//dbController.connect('mongodb://cameronc:PASSWORD@ds027328.mlab.com:27328/nocamssky');
 console.log('Database connection: Successful.');
 
 console.log('Game engine started.' + "\n----------------------\n\n");

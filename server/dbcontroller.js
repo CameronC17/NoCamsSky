@@ -4,6 +4,8 @@
 //			© CAMERON CHALMERS, 2016	  	         	//
 //##############################################//
 
+"use strict";
+
 /*
 
 var UserSchema = new mongoose.Schema({

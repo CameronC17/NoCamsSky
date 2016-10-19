@@ -4,6 +4,8 @@
 //			© CAMERON CHALMERS, 2016	  	         	//
 //##############################################//
 
+"use strict";
+
 //includes
 var Space = require('./space').Space;
 var Player = require('./player').Player;

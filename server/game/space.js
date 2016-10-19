@@ -4,7 +4,9 @@
 //			© CAMERON CHALMERS, 2016	  	         	//
 //##############################################//
 
-var TerrainGenerator = require('./TerrainGenerator').TerrainGenerator;
+"use strict";
+
+var TerrainGenerator = require('./terrainGenerator').TerrainGenerator;
 
 class Space {
   constructor() {
@@ -92,7 +94,6 @@ class Space {
 
   removePlayer(name,planet) {
     var planetID = this.planets.map(function(e) { return e.name; }).indexOf(planet);
-    console.log(planet);
     if (planetID > -1) {
       var playerIndex = -1;
       for (var i = 0; i < this.terrain[planetID].ships.length; i++) {
@@ -188,7 +189,7 @@ class Space {
             }
             rtnArray.push(row);
           }
-          return [rtnArray, this.terrain.type];
+          return [rtnArray, terrain.type];
         }
       }
     }
