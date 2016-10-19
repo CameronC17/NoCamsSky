@@ -51,6 +51,7 @@ function mainLoop() {
     if (screen.screenPosition != 4)
       screen.draw();
     else {
+      game.clearScreen();
       game.draw();
       game.movementListener();
     }
@@ -460,6 +461,11 @@ class Game {
     }
   }
 
+  clearScreen() {
+    ctx.fillStyle="#000";
+    ctx.fillRect(0, 0, c.width, c.height);
+  }
+
   checkDamaged() {
     if (this.damageIndicator != null) {
       var currTime = new Date().getTime();
@@ -614,33 +620,82 @@ class Game {
   }
 
   drawPlayer() {
-    ctx.fillStyle="#6d6d6d";
-    ctx.save();
     var x = (c.width/2) - 105,
         y = (c.height / 2) - 35,
         width = 25,
-        height = 50;
+        height = 40;
+
+    this.drawShip(x, y, width, height, this.direction, "#fff", this.ship, "name");
+  }
+
+  drawShip(x, y, width, height, rot, colour, ship, username) {
+    ctx.fillStyle=colour;
+    ctx.strokeStyle="#000";
+    ctx.save();
     ctx.translate(x + width / 2, y + height / 2);
 
-    ctx.rotate(this.direction * Math.PI / 180);
+    ctx.rotate(rot * Math.PI / 180);
     ctx.translate(-(x + width / 2), -(y + height / 2));
+
+    var thrusterSize = 1.4;
+    var thrusterX = x - 5;
+    //checks if ship has bigger thrusters
+    if (ship) {
+      if (ship[0] > 3) {
+        thrusterSize = 0.8;
+        thrusterX = x - 17;
+      }
+    }
 
     //thruster sprite
     var sprite = spriter.getSprite("thruster");
     if (sprite != null) {
-      ctx.drawImage(sprite.image,sprite.x,sprite.y,sprite.width,sprite.height,(c.width/2) - 110, (c.height / 2) - 15,(sprite.width)/1.4,(sprite.height)/1.4);
+      ctx.drawImage(sprite.image,sprite.x,sprite.y,sprite.width,sprite.height,thrusterX, y + 5,(sprite.width)/thrusterSize,(sprite.height)/thrusterSize);
     }
-    
+
+    if (ship) {
+      if (ship[0] > 3) {
+        //left triangle
+        ctx.beginPath();
+        ctx.moveTo(x - 16,y + 1 + height);
+        ctx.lineTo(x + (width)/2 - 16, y - 40 + height);
+        ctx.lineTo(x + width - 16,y + 1 + height);
+        ctx.lineTo(x - 16,y + 1 + height);
+        ctx.closePath();
+        ctx.fill();
+
+        //right triangle
+        ctx.beginPath();
+        ctx.moveTo(x + 16,y + 1 + height);
+        ctx.lineTo(x + (width)/2 + 16, y - 40 + height);
+        ctx.lineTo(x + width + 16,y + 1 + height);
+        ctx.lineTo(x + 16,y + 1 + height);
+        ctx.closePath();
+        ctx.fill();
+      }
+    }
+
     //ship body
-    ctx.fillRect((c.width/2) - 105, (c.height / 2) - 35, 25, 50);
+    ctx.fillRect(x, y, width, height);
 
-    //peak of ship
-    ctx.fillRect((c.width/2) - 108, (c.height / 2) - 40, 31, 6);
+    //main middle triangle
+    ctx.beginPath();
+    ctx.moveTo(x,y + 1);
+    ctx.lineTo(x + (width)/2, y - 60);
+    ctx.lineTo(x + width,y + 1);
+    ctx.lineTo(x,y + 1);
+    ctx.closePath();
+    ctx.fill();
 
+    ctx.fillStyle="#7ae4f9";
+    ctx.fillRect(x + 5, y, 15, 8);
 
     ctx.restore();
+
+    ctx.fillStyle="#18e061";
+
     ctx.font="20px Arial";
-    ctx.fillText(this.position, (c.width/2) - 134, (c.height / 2) + 55);
+    ctx.fillText(username, x - 10, y + 75);
   }
 
   drawStars() {
@@ -658,21 +713,13 @@ class Game {
     for (var i = 0; i < this.otherPlayers.length; i++) {
       var otherPlayer = this.otherPlayers[i];
       var pos = this.getPositionRelative(otherPlayer.position);
-      ctx.fillStyle="#23e564";
-      ctx.save();
       var x = pos[0],
           y = pos[1],
           width = 25,
           height = 50;
-      ctx.translate(x + width / 2, y + height / 2);
 
-      ctx.rotate(otherPlayer.direction * Math.PI / 180);
-      ctx.translate(-(x + width / 2), -(y + height / 2));
-      ctx.fillRect(x, y, 25, 50);
-      ctx.fillStyle="#ff0000";
-      ctx.fillRect(x - 3, y - 5, 31, 6);
+      this.drawShip(x, y, width, height, otherPlayer.direction, "#fff", otherPlayer.ship, otherPlayer.username);
 
-      ctx.restore();
     }
   }
 
@@ -690,6 +737,8 @@ class Game {
   }
 
   drawPlanets() {
+    ctx.fillStyle="#71f2a0";
+    ctx.strokeStyle="#369659";
     for (var i = 0; i < this.planets.length; i++) {
       var planet = this.planets[i];
       var pos = this.getPositionRelative(planet.position);
@@ -731,6 +780,7 @@ class Game {
       ctx.fill();
       ctx.lineWidth = 5;
       ctx.stroke();
+      ctx.closePath();
     }
   }
 

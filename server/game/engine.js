@@ -46,7 +46,7 @@ class GameEngine {
       var other = this.players[i];
       if (other.username != player.username) {
         if (other.isClose(player.position)) {
-          rtnArray.push({"username" : other.username, "position" : other.position, "direction" : other.direction, "health" : other.health})
+          rtnArray.push({"username" : other.username, "position" : other.position, "direction" : other.direction, "ship" : other.ship})
         }
       }
     }
