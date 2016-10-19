@@ -35,7 +35,27 @@ var images = [
     "mWidth" : 200,
     "mHeight" : 178,
     "timing" : 60,
-    "multiline" : true
+    "multiline" : false
+  },
+  {
+    "name" : "spaceshuttle",
+    "image" : "http://i.imgur.com/wbM1tDL.png",
+    "width" : 36,
+    "height" : 36,
+    "mWidth" : 36,
+    "mHeight" : 36,
+    "timing" : 100,
+    "multiline" : false
+  },
+  {
+    "name" : "spaceman",
+    "image" : "http://i.imgur.com/hKUFwj3.png",
+    "width" : 36,
+    "height" : 36,
+    "mWidth" : 36,
+    "mHeight" : 36,
+    "timing" : 100,
+    "multiline" : false
   }
 ];
 
@@ -507,8 +527,10 @@ class Game {
       var xPos = this.shipData[i][1][0] - this.landPosition[0];
       var yPos = this.shipData[i][1][1] - this.landPosition[1];
       if (xPos > - 12 && xPos < 12 && yPos > -12 && yPos < 12) {
-        ctx.fillStyle="#fff";
-        ctx.fillRect(playerXPos + (xPos * 50), playerYPos + (yPos * 50) - this.landAnimation, 36, 36);
+        //ctx.fillStyle="#fff";
+        //ctx.fillRect(playerXPos + (xPos * 50), playerYPos + (yPos * 50) - this.landAnimation, 36, 36);
+        var sprite = spriter.getSprite("spaceshuttle");
+        ctx.drawImage(sprite.image,sprite.x,sprite.y,sprite.width,sprite.height,playerXPos + (xPos * 50),playerYPos + (yPos * 50) - this.landAnimation,sprite.width,sprite.height);
       }
     }
   }
@@ -537,53 +559,200 @@ class Game {
       //change this next line to get the correct character picture
       ctx.fillStyle="#f44242";
       var newPos = [550 - ((this.otherLandPlayers[i].position[0] + 1) * 50), 450 - ((this.otherLandPlayers[i].position[1] + 1) * 50)];
-      ctx.fillStyle="#f44242";
-      ctx.fillRect(newPos[0] + 7, newPos[1] + 7, 36, 36);
+      //ctx.fillStyle="#f44242";
+      //ctx.fillRect(newPos[0] + 7, newPos[1] + 7, 36, 36);
+      var sprite = spriter.getSprite("spaceman");
+      ctx.drawImage(sprite.image,sprite.x,sprite.y,sprite.width,sprite.height,newPos[0] + 7,newPos[1] + 7,sprite.width,sprite.height);
     }
   }
 
   drawLandPlayer() {
     if (this.landAnimation <= 0 && this.takeOffAnimation <= 0) {
       ctx.fillStyle="#a0099e";
-      var yPos = Math.floor(this.terrain.length / 2);
-      var xPos = Math.floor(this.terrain[0].length / 2);
-      ctx.fillRect(xPos * 50 + 7, yPos * 50 + 7, 36, 36);
+      var y = Math.floor(this.terrain.length / 2);
+      var x = Math.floor(this.terrain[0].length / 2);
+      var xPos = x * 50 + 7;
+      var yPos = y * 50 + 7;
+      //ctx.fillRect(xPos * 50 + 7, yPos * 50 + 7, 36, 36);
+      var sprite = spriter.getSprite("spaceman");
+      ctx.drawImage(sprite.image,sprite.x,sprite.y,sprite.width,sprite.height,xPos,yPos,sprite.width,sprite.height);
     }
   }
 
   getTileColour(val) {
-    switch (val) {
-      case "1":
-        return "#a07975";
+    switch (this.terrainType) {
+      case "Earth":
+        switch (val) {
+        case "1":
+          return "#a07975";
+          break;
+        case "2":
+          return "#7a615e";
+          break;
+        case "3":
+          return "#b7db62";
+          break;
+        case "4":
+          return "#8adb62";
+          break;
+        case "5":
+          return "#6fdb39";
+          break;
+        case "6":
+          return "#09a046";
+          break;
+        case "w":
+          return "#000";
+          break;
+        case "o":
+          return "#0cfff2";
+          break;
+        case "d":
+          return "#ffb20c";
+          break;
+        default:
+          return "#74787a";
+          break;
+      }
         break;
-      case "2":
-        return "#7a615e";
+      case "Fire":
+      switch (val) {
+        case "1":
+          return "#a07975";
+          break;
+        case "2":
+          return "#7a615e";
+          break;
+        case "3":
+          return "#e62e00";
+          break;
+        case "4":
+          return "#ff9900";
+          break;
+        case "5":
+          return "#ff9966";
+          break;
+        case "6":
+          return "#ff6666";
+          break;
+        case "w":
+          return "#000";
+          break;
+        case "o":
+          return "#0cfff2";
+          break;
+        case "d":
+          return "#006600";
+          break;
+        default:
+          return "#74787a";
+          break;
+      }
         break;
-      case "3":
-        return "#b7db62";
+      case "Ice":
+      switch (val) {
+        case "1":
+          return "#ccffff";
+          break;
+        case "2":
+          return "#33ffff";
+          break;
+        case "3":
+          return "#fff";
+          break;
+        case "4":
+          return "#3399ff";
+          break;
+        case "5":
+          return "#0033cc";
+          break;
+        case "6":
+          return "#0099cc";
+          break;
+        case "w":
+          return "#000";
+          break;
+        case "o":
+          return "#ffff00";
+          break;
+        case "d":
+          return "#006600";
+          break;
+        default:
+          return "#74787a";
+          break;
+      }
         break;
-      case "4":
-        return "#8adb62";
-        break;
-      case "5":
-        return "#6fdb39";
-        break;
-      case "6":
-        return "#09a046";
-        break;
-      case "w":
-        return "#000";
-        break;
-      case "o":
-        return "#0cfff2";
-        break;
-      case "d":
-        return "#ffb20c";
+      case "Waste":
+        switch (val) {
+        case "1":
+          return "#669900";
+          break;
+        case "2":
+          return "#996633";
+          break;
+        case "3":
+          return "#666633";
+          break;
+        case "4":
+          return "#336600";
+          break;
+        case "5":
+          return "#808000";
+          break;
+        case "6":
+          return "#999966";
+          break;
+        case "w":
+          return "#000";
+          break;
+        case "o":
+          return "#0cfff2";
+          break;
+        case "d":
+          return "#ffb20c";
+          break;
+        default:
+          return "#74787a";
+          break;
+      }
         break;
       default:
-        return "#74787a";
-        break;
+        switch (val) {
+        case "1":
+          return "#ffff00";
+          break;
+        case "2":
+          return "#00ffff";
+          break;
+        case "3":
+          return "#ff0066";
+          break;
+        case "4":
+          return "#ffffff";
+          break;
+        case "5":
+          return "#66ff33";
+          break;
+        case "6":
+          return "#ff0000";
+          break;
+        case "w":
+          return "#000";
+          break;
+        case "o":
+          return "#000";
+          break;
+        case "d":
+          return "#ffb20c";
+          break;
+        default:
+          return "#74787a";
+          break;
+      }
+      break;
     }
+
   }
 
   createUpgradeButtons() {
@@ -1039,6 +1208,7 @@ class Game {
 class Connection {
   constructor() {
     this.socket = io.connect("http://localhost:8000");
+    //this.socket = io.connect("https://nocamssky.herokuapp.com/");
     this.socket.on('connect', this.connectMessage);
     this.socket.on('loginconfirm', this.loginConfirm);
     this.socket.on('serverupdate', this.serverUpdate);
