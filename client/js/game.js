@@ -655,19 +655,19 @@ class Game {
           return "#ccffff";
           break;
         case "2":
-          return "#33ffff";
+          return "#cce6ff";
           break;
         case "3":
           return "#fff";
           break;
         case "4":
-          return "#3399ff";
+          return "#66e0ff";
           break;
         case "5":
-          return "#0033cc";
+          return "#99ccff";
           break;
         case "6":
-          return "#0099cc";
+          return "#99bbff";
           break;
         case "w":
           return "#000";
